@@ -1,0 +1,8 @@
+#!/bin/zsh
+# Forge's CLI (forge/cli.py): the unattended work pipeline. `dispatch` and `originate` run on Jarvis's host binding,
+# so they need Jarvis's interpreter; everything else is Forge's own.
+case "$1" in
+  dispatch|originate) PY=$HOME/.jarvis/.venv/bin/python ;;
+  *) PY=$HOME/.forge/.venv/bin/python ;;
+esac
+exec $PY -c 'import sys; sys.path.insert(0, sys.argv.pop(1)); from forge.cli import main; sys.exit(main())' $HOME/.forge "$@"

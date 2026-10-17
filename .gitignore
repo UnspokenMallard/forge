@@ -1,3 +1,5 @@
-state/
+state/*
+!state/g15-corpus.json
+!state/g15-replay.json
 .venv/
 __pycache__/
