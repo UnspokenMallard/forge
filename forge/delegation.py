@@ -34,7 +34,7 @@ import re
 import time
 from pathlib import Path
 
-from budget import ledger
+import gateway
 
 from .host import host
 from .store import log
@@ -197,33 +197,14 @@ async def _score_criteria(repo: str, task: dict, base: str | None) -> str | None
         f"ACCEPTANCE CRITERIA:\n{numbered}\n\nDIFF:\n{diff}\n"
     )
 
-    scoring_started = time.time()
-    code, out = await host.run_process(
-        [
-            "claude", "-p", prompt,
-            "--model", "haiku",
-            "--output-format", "text",
-            # Scoring reads the diff it was handed and nothing else. No tool
-            # should touch this repo on the daemon's behalf.
-            "--disallowed-tools", "Bash", "Edit", "Write", "Read", "Glob", "Grep", "WebFetch",
-        ],
-        timeout_s=180,
-        env=host.env_for_path(repo),
-    )
-    # Metered for Phase 6 step 3. `--output-format text` reports no cost, so
-    # `cost_usd` stays NULL rather than being recorded as 0.00 -- an unknown
-    # price is not a free call, and writing 0 would understate spend in the one
-    # direction that matters. The call COUNT is the runaway signal either way.
-    ledger.record_call(
-        "criteria-score",
-        scope=host.scope_of(repo),
-        ok=(code == 0),
-        duration_s=time.time() - scoring_started,
-        model="haiku",
-        detail=f"exit={code}",
-    )
-    if code != 0:
-        return f"criteria scoring unavailable (claude exit={code})"
+    # Through Gateway (surface `criteria-score`, which picks the model and writes the provider-ledger
+    # row under that name). Since 2026-10-17 the call is isolated with JSON output, so its cost is
+    # known; it reads the diff it was handed and nothing else.
+    res = await gateway.aask("criteria-score", prompt, scope=host.scope_of(repo), timeout_s=180)
+    if res is None or not res["ok"]:
+        why = "surface is off" if res is None else str(res["reason"])[:80]
+        return f"criteria scoring unavailable ({why})"
+    out = res["text"]
 
     body = out.strip()
     start, end = body.find("["), body.rfind("]")

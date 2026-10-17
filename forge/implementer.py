@@ -24,21 +24,25 @@ rather than assumed:
   as its message and no trailer. A worktree holds only committed files plus
   the agent's edits, so `git add -A` in it cannot sweep anyone's work in.
 
-Spend is metered as an LLM job (`budget.ledger.record_job("implementer", ...)`) against
-the weekly ceiling, and each task is capped with `--max-budget-usd`. The
+The session runs through Gateway (`gateway.run_agent`, surface `job:implementer`, which picks
+the model, since 2026-10-17): spend is metered as an LLM job (`job_calls`, "implementer")
+against the weekly ceiling, and each task is capped with `--max-budget-usd`. The
 outcome is filed into ~/.jarvis/delegation/done/ or failures/, where the
 watcher picks it up for the verifier, the review note and the queue write-back.
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 import uuid
 from pathlib import Path
 from typing import Any, Mapping
 
-from budget import ledger, limits
+import gateway
+from budget import ledger
+from gateway import agent as gw_agent
 
 from . import store
 from .host import host
@@ -58,7 +62,6 @@ def settings(cfg: Mapping[str, Any] | None = None) -> dict:
     # False in code as well as in config: a missing key must never switch
     # spending on. Same rule as `[brain] escalation_enabled`.
     section.setdefault("enabled", False)
-    section.setdefault("model", "sonnet")
     section.setdefault("max_usd_per_task", 2.00)
     section.setdefault("timeout_s", 1200)
     return section
@@ -89,21 +92,17 @@ def _rule_path(path: Path) -> str:
     return "/" + posix if posix.startswith("/") and not posix.startswith("//") else posix
 
 
-def command(exe: str, model: str, budget_usd: float, worktree: Path, session: str) -> list[str]:
+FLAGS = ["--strict-mcp-config", "--restricted", "--safe-mode"]
+
+
+def allow_rules(worktree: Path) -> list[str]:
     root = _rule_path(worktree)
-    return [
-        exe, "-p",
-        "--model", model,
-        "--output-format", "json",
-        "--strict-mcp-config",
-        "--restricted",
-        "--safe-mode",
-        "--tools", TOOLS,
-        "--permission-mode", "dontAsk",
-        "--allowedTools", "Read", "Glob", "Grep", f"Edit({root}/**)", f"Write({root}/**)",
-        "--max-budget-usd", f"{budget_usd:.2f}",
-        "--session-id", session,
-    ]
+    return ["Read", "Glob", "Grep", f"Edit({root}/**)", f"Write({root}/**)"]
+
+
+def command(exe: str, model: str, budget_usd: float, worktree: Path, session: str) -> list[str]:
+    """The argument list Gateway runs for one task (shown here for the selftest)."""
+    return gw_agent.command(exe, model, session, TOOLS, allow_rules(worktree), budget_usd, flags=FLAGS)
 
 
 def build_prompt(task_text: str, criteria: list[str], constraints: list[str]) -> str:
@@ -130,11 +129,14 @@ End with a two- or three-line summary of what you changed.
 """
 
 
-async def _agent(
-    cmd: list[str], cwd: Path, prompt: str, timeout_s: int, env: dict[str, str] | None = None
-) -> tuple[int, str]:
-    """The one place a model process is spawned. The selftest replaces it."""
-    return await host.run_process(cmd, timeout_s=timeout_s, cwd=str(cwd), input_text=prompt, env=env)
+async def _agent(task_id: str, worktree: Path, prompt: str, conf: Mapping[str, Any], session: str,
+                 scope: str) -> dict:
+    """The one place a model process is spawned: one `gateway.run_agent` attempt. The selftest replaces it."""
+    return await asyncio.to_thread(
+        gateway.run_agent, JOB, prompt, TOOLS, allow_rules(worktree), float(conf["max_usd_per_task"]),
+        scope=scope, cwd=worktree, flags=FLAGS, session=session, max_attempts=1,
+        timeout_s=int(conf["timeout_s"]), note=task_id,
+    )
 
 
 async def _git(worktree: Path, *args: str) -> tuple[int, str]:
@@ -173,20 +175,12 @@ async def run(
             False,
             f"LLM job budget reached ({task_scope} account: ${budget['spent']:.2f} of ${budget['ceiling']:.2f} this week)",
         )
-    exe = host.brain_cli_path()
-    if exe is None:
-        return _outcome(False, "claude CLI not found")
-
     session = str(uuid.uuid4())
-    model = str(conf["model"])
-    cmd = command(exe, model, float(conf["max_usd_per_task"]), worktree, session)
-    started = time.time()
     # The worktree resolves to its repo, so a work repo's task runs under claude-work.
-    code, output = await _agent(
-        cmd, worktree, build_prompt(task_text, criteria, constraints), int(conf["timeout_s"]),
-        env=host.env_for(task_scope),
-    )
-    duration = time.time() - started
+    res = await _agent(task_id, worktree, build_prompt(task_text, criteria, constraints), conf, session, task_scope)
+    output = res["output"]
+    if res["subtype"] == "not-started":
+        return _outcome(False, str(res.get("reason") or "not started"))
 
     log_path = LOGS / f"{task_id}.claude.json"
     try:
@@ -195,21 +189,14 @@ async def run(
     except OSError as exc:
         log.warning("implementer: could not keep the output of %s: %s", task_id, exc)
 
-    try:
-        parsed, _ = json.JSONDecoder().raw_decode(output, output.index("{"))
-    except ValueError:
-        parsed = {}
-    cost = float(parsed.get("total_cost_usd") or 0.0)
-    subtype = str(parsed.get("subtype") or f"exit {code}")
-    summary = " ".join(str(parsed.get("result") or "").split())[:400]
-    denials = [d.get("tool_name", "?") for d in parsed.get("permission_denials") or []]
-
-    hit = limits.detect(output, host.provider_of(task_scope)) if code != 0 or subtype != "success" else None
+    cost, subtype, denials = float(res["cost_usd"] or 0.0), str(res["subtype"]), list(res["denials"])
+    summary = " ".join(str(res["result"] or "").split())[:400]
+    # Gateway recorded the job call and any usage-limit window in Budget; Jarvis raises the alert.
+    hit = res["limit"]
     if hit is not None:
-        host.record_limit(hit)
-    ok_call = code == 0 and subtype == "success"
-    ledger.record_job(JOB, ok_call, duration, cost, model, f"{task_id} {subtype} denials={len(denials)}", scope=task_scope)
-    base = {"cost_usd": round(cost, 4), "session": session, "log": str(log_path)}
+        host.alert_limit(hit.provider)
+    ok_call = bool(res["ok"])
+    base = {"cost_usd": round(cost, 4), "session": res["session"] or session, "log": str(log_path)}
 
     if not ok_call:
         why = f"usage limit: {hit.evidence}" if hit is not None else subtype

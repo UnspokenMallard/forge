@@ -32,6 +32,8 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
+import gateway
+
 from . import findings, proposer, store
 from .host import host
 from .queue import QUEUE_PATH, _field, _parse_entries
@@ -161,11 +163,15 @@ async def _originate_scope(cfg: dict, report: str, targets: dict[str, str], scop
     if not cands:
         return f"[{scope}] nothing to judge - no new findings for {', '.join(sorted(scoped)) or 'any repo'}"
 
+    # G15 measured the proposer on proposer.MODEL; Gateway's surface must still route it there.
+    routed = gateway.model_for("originate")
+    if routed != proposer.MODEL:
+        return f"[{scope}] proposer not called - Gateway routes 'originate' to {routed}, G15 measured {proposer.MODEL}"
     proposer.WORKDIR.mkdir(parents=True, exist_ok=True)
     result = await host.brain_work(
         proposer.build_prompt(_scope_report(report, scoped), cands, already),
         cwd=str(proposer.WORKDIR),
-        model=proposer.MODEL,
+        surface="originate",
         cfg=cfg,
         purpose=host.ORIGINATION,
         isolated=True,

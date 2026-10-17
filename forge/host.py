@@ -6,7 +6,7 @@ host binds the callables once at startup (`daemon/forge_host.py`), and a test bi
 
     run_process(cmd, timeout_s=, cwd=, input_text=, env=) -> (code, output)    async
     notify(key, message, severity=, cooldown_s=)            Jarvis's alert path; Forge never pings
-    record_limit(hit)                                       a usage-limit hit Budget detected
+    alert_limit(provider)                                   alert a usage limit Gateway recorded in Budget
     permit(action, target, cfg=, evidence=) -> Decision     the autonomy ladder; .allowed .reason .action_id
     record_outcome(action_id, text)
     brain_allowed(cfg, purpose, scope) -> (ok, why)         the brain's caps, breaker, limit and brake
