@@ -1,44 +1,39 @@
 # Next prompt: Forge
 
-Forge is the unattended work pipeline, to be split out of Jarvis so Jarvis is an orchestrator. Designed on
-2026-10-17 (`~/.forge/DESIGN.md`, decisions at its top); not built yet. Components are built one
-per session, in the order Budget, Sentinel, Herald, Forge: each edits `~/.jarvis/config.toml`
-and the daemon, so two at once would conflict.
+DONE 2026-10-17: Forge is built and live (`~/.forge/DESIGN.md`, "As built"; Jarvis commit "Move the work
+pipeline, review ledger, policy and corpora into Forge"). What is left is a check of the first night and
+cleanup that waits on Anze.
 
 ## When to fire this
 
-Earliest-useful dates, not deadlines; being late costs nothing (Jarvis keeps running as is).
+Earliest-useful dates, not deadlines; being late costs nothing.
 
 | When | Step | Waits on |
 |---|---|---|
-| now (Herald is DONE 2026-10-17) | build Forge from its DESIGN.md | the previous component's cutover |
+| 2026-10-18 08:00 | first-night check: the 03:20 `corpus-capture` result in `status.py` reads `events: ... total` (from `~/.forge/state/corpora`, which `forge corpus list` shows captured today); `review-reconcile` and `queue-dispatch` results normal; new rows in `~/.forge/state/forge.db` `classifications`, none newer than 2026-10-17 21:46 in `~/.jarvis/jarvis.db`; morning digest still has its review section when something waits; no `handler-reload` or `handler-failed:queue-dispatch` incident | the first night |
+| after that check, Anze | drop `review_items` and `classifications` from `~/.jarvis/jarvis.db`; delete `jarvis.db.bak-forge`, `~/.jarvis/corpora/`, `~/.jarvis/REVIEW-QUEUE.md`, and `git rm` `~/.jarvis/g15-corpus.json` and `g15-replay.json` (Forge's copies are tracked in this repo) | Anze's confirmation |
 
 ## A: advance the work
 
-> Build Forge. Read `~/.forge/DESIGN.md`, `~/.jarvis/NEXT-PROMPT.md` (its load-bearing rules),
-> and how Budget was split (`~/.budget/DESIGN.md` "As built", Jarvis commit "Move the spend
-> ledger, ceilings, limits and brake decision into Budget"), Sentinel (`~/.sentinel/DESIGN.md`) and Herald
-> (`~/.herald/DESIGN.md` "As built": the structured-request service and `daemon/herald_client.py`, the fail-loud
-> rule, the selftest loopback transport; Jarvis commit "Move the channels, the signal table and the phone commands
-> into Herald") and Mind (`~/.mind/DESIGN.md`): same layout, same cutover discipline. Herald is DONE: Forge's
-> notices to Anze go through it, never past it. Work in the main checkouts, not a worktree: the cutover
-> restarts the live daemon (`~/.jarvis/restart.sh` only; the HUD with
-> `launchctl kickstart -k gui/$(id -u)/com.jarvis.hud`).
-> Rules: Forge never alerts, pings or holds work; Jarvis triggers it and acts. Back up
-> `jarvis.db` with `sqlite3 .backup` before moving any table; copy rows, never drop a table or
-> delete a backup without Anze's confirmation. Redirect the component's data in `selftest.py`
-> before anything imports it (as `BUDGET_HOME` is). Selftest, HUD tests, Mind and Budget tests
-> must pass before and after. Ask Anze the design's open questions first (AskUserQuestion, one
-> batch). When done, mark this file DONE, add a dated
-> section to `~/.jarvis/JOURNAL.md`, and stop and tell me if anything differs from the design.
+> Read `~/.forge/DESIGN.md` ("As built") and this file. Do the first row whose date has passed and report.
+> Rules: Forge never alerts, pings or holds work; Jarvis triggers it and acts. Forge imports nothing from
+> `~/.jarvis`: what it needs from Jarvis goes through `forge/host.py`, bound by `~/.jarvis/daemon/forge_host.py`.
+> An unbound host name raises; never give it a default that looks like an answer. Never widen `[[actions]]`
+> targets, never add a push or open-pull-request action, never delete anything under `~/.jarvis/worktrees`.
+> G15 is recomputed, never stored; do not edit `proposer.PROMPT` and re-run the replay against the same labels.
+> A corpus never shrinks. Never drop a table or delete a backup or a file copy without Anze's confirmation.
+> A Forge code change needs `~/.jarvis/restart.sh` (Forge is not hot-reloaded). Stop and tell me if anything
+> differs from what this file expects.
 
 ## B: status only
 
-> Read `~/.forge/DESIGN.md` and this file, and report whether Forge is built. Change nothing.
+> Run `~/.forge/bin/forge review`, `~/.forge/bin/forge ledger`, `~/.forge/bin/forge g15`,
+> `~/.forge/bin/forge policy`, `~/.forge/bin/forge corpus list`, `~/.forge/.venv/bin/python
+> ~/.forge/tests/test_forge.py` and `~/.jarvis/.venv/bin/python ~/.jarvis/selftest.py`. Change nothing.
 
 ## C: something is broken
 
-> Forge or the Jarvis daemon broke during the cutover. First, do not delete `jarvis.db`, a
-> backup or a state file. Run `~/.jarvis/.venv/bin/python ~/.jarvis/status.py` and the selftest,
-> read the daemon log, and report before fixing. `git -C ~/.jarvis log` shows the cutover commit
-> to compare against.
+> Forge or the Jarvis daemon broke after the cutover. First, do not delete `state/forge.db`, `jarvis.db`, a
+> backup, a corpus or a worktree: they are the evidence. Copy the db with `sqlite3 .backup`, run
+> `~/.jarvis/.venv/bin/python ~/.jarvis/status.py` and the selftest, read `~/.jarvis/logs/jarvis.log`, and
+> report before fixing. `git -C ~/.jarvis log` and `git -C ~/.forge log` show the cutover commits.

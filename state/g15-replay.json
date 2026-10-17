@@ -1,0 +1,960 @@
+{
+  "prompt_sha": "2fc5868810cb",
+  "model": "sonnet",
+  "profile": "isolated",
+  "generated_at": "2026-09-12T10:22:14+02:00",
+  "cost_usd": 0.4157,
+  "labels_when_run": {
+    "unlabelled": 134
+  },
+  "revisions": [
+    {
+      "sha": "1d4d163a432fabf1bb22cd30f2e8c1c2eaa3d994",
+      "ts": 1787796334,
+      "candidates": 27,
+      "session": "6bb5a896-d848-44d6-9808-f00f8c313fde",
+      "cost_usd": 0.0342,
+      "duration_s": 25.9,
+      "ok": true,
+      "error": "",
+      "verdicts": [
+        {
+          "id": "F1",
+          "key": "Cross-project priorities::the ory/sso work is live across three repos at once and is",
+          "verdict": "never",
+          "why": "Cross-repo uncommitted work needing a coordinated decision, not a single-repo diff."
+        },
+        {
+          "id": "F2",
+          "key": "Cross-project priorities::support is # commits ahead of event-registry/master and unpushed.",
+          "verdict": "never",
+          "why": "Status observation about unpushed commits, not a change to make."
+        },
+        {
+          "id": "F3",
+          "key": "Cross-project priorities::ernodeapi has # uncommitted files and is # commits behind its upstream.",
+          "verdict": "never",
+          "why": "Status observation (uncommitted files + behind upstream), not an actionable diff."
+        },
+        {
+          "id": "F4",
+          "key": "Cross-project priorities::er-web's handoff has been inprogress for # days and should be closed",
+          "verdict": "never",
+          "why": "Requires the developer to decide whether to close or resume the handoff."
+        },
+        {
+          "id": "F5",
+          "key": "Cross-project priorities::er-web's security backlog is still # open findings, unchanged.",
+          "verdict": "never",
+          "why": "Security backlog fixes need policy/priority decisions, not a blind edit."
+        },
+        {
+          "id": "F6",
+          "key": "Cross-project priorities::general/caddy still has no remote at all.",
+          "verdict": "never",
+          "why": "Adding a remote requires credentials/account decisions outside the repo."
+        },
+        {
+          "id": "F7",
+          "key": "support::# commits unpushed. everything in the bullet above exists only on this",
+          "verdict": "never",
+          "why": "Unpushed-commits status observation, no push allowed anyway."
+        },
+        {
+          "id": "F8",
+          "key": "support::# uncommitted files, all in scripts/ory/ \u2014 compose files (dev/ha/prod), kratos.yml, identity.schema.json,",
+          "verdict": "never",
+          "why": "Concerns uncommitted files the agent cannot see or act on."
+        },
+        {
+          "id": "F9",
+          "key": "support::two untracked files: scripts/error.txt (a captured error dump, #-#-# #:# \u2014 decide",
+          "verdict": "never",
+          "why": "Explicitly asks the developer to decide whether a file is worth keeping."
+        },
+        {
+          "id": "F10",
+          "key": "support::no next-prompt.md despite this being exactly the kind of multi-session, machine-gated rollout",
+          "verdict": "never",
+          "why": "Creating a process-convention file for an in-flight rollout needs developer judgment on content."
+        },
+        {
+          "id": "F11",
+          "key": "er-api::# uncommitted files (+#/\u2212#): globals.d.ts, routesutils.ts, scripts/ory-native/identity.schema.json, settings-default.json. small and coherent \u2014",
+          "verdict": "never",
+          "why": "Concerns uncommitted files that are part of an undecided cross-repo change set."
+        },
+        {
+          "id": "F12",
+          "key": "er-api::staging branch last moved #-#-#, ~# weeks behind dev. not necessarily wrong",
+          "verdict": "never",
+          "why": "Status observation about branch staleness, not a change."
+        },
+        {
+          "id": "F13",
+          "key": "er-api::the payment-path fixes noted above are now committed \u2014 the \"payment changes",
+          "verdict": "never",
+          "why": "Already resolved; nothing to do."
+        },
+        {
+          "id": "F14",
+          "key": "er-web::handoff is # days stale and blocked on evidence that no longer",
+          "verdict": "never",
+          "why": "Stale handoff needing investigation and developer judgment, not a mechanical fix."
+        },
+        {
+          "id": "F15",
+          "key": "er-web::# uncommitted files (+#/\u2212#) \u2014 oidccallback and register components plus their specs,",
+          "verdict": "never",
+          "why": "Concerns uncommitted files that are part of an undecided cross-repo change set."
+        },
+        {
+          "id": "F16",
+          "key": "er-web::# local branches, most dormant: auto-search-mode and feature (both #-#-#), dev/fix (#-#-#,",
+          "verdict": "never",
+          "why": "Dormant-branch status observation requiring a decision on each branch."
+        },
+        {
+          "id": "F17",
+          "key": "er-web::project memory records a real hazard worth remembering: the checked-out branch has",
+          "verdict": "never",
+          "why": "A reminder/hazard note, not a code change."
+        },
+        {
+          "id": "F18",
+          "key": "er_node_api::# uncommitted paths. mixed staged (a/d/m) and unstaged (mm, am) states \u2014",
+          "verdict": "never",
+          "why": "Concerns a large uncommitted/mixed-index tree the agent cannot safely restage."
+        },
+        {
+          "id": "F19",
+          "key": "er_node_api::behind upstream by # commits while carrying a #-file local change set.",
+          "verdict": "never",
+          "why": "Status observation about being behind upstream, not a change."
+        },
+        {
+          "id": "F20",
+          "key": "er_node_api::two weeks stale at the oldest edit (#-#-#), five days at the",
+          "verdict": "never",
+          "why": "Staleness observation, not an actionable change."
+        },
+        {
+          "id": "F21",
+          "key": "er_node_api::tasks.md's own constraints say \"do not commit unless the user asks\" \u2014",
+          "verdict": "never",
+          "why": "Explicitly requires the user's ask before committing."
+        },
+        {
+          "id": "F22",
+          "key": "er-web-test::branch is behind origin by # with # uncommitted files, so a",
+          "verdict": "never",
+          "why": "Status observation about being behind origin, needing careful rebase judgment."
+        },
+        {
+          "id": "F23",
+          "key": "er-web-test::uncommitted: ecosystem.config.cjs, scripts/dev/pm#webservermanager.ts, scripts/startwebserver.js \u2014 dev-server plumbing, stale since #-#-#.",
+          "verdict": "never",
+          "why": "Concerns uncommitted dev-server files, not a change the agent can make."
+        },
+        {
+          "id": "F24",
+          "key": "er-web-test::a literal ${workspacefolder}/ directory exists in the repo root, untracked, created #-#-#.",
+          "verdict": "never",
+          "why": "Untracked artifact flagged read-only per the report; agent can't see untracked files anyway."
+        },
+        {
+          "id": "F25",
+          "key": "er-web-test::staging (#-#-#) is slightly ahead of the feature branch in time; check",
+          "verdict": "never",
+          "why": "Requires deciding which branch is current."
+        },
+        {
+          "id": "F26",
+          "key": "cmdpeek::no upstream tracking branch (## main, no remote shown) on a repo",
+          "verdict": "never",
+          "why": "Wiring up a remote/release target needs credentials and a policy decision."
+        },
+        {
+          "id": "F27",
+          "key": "cmdpeek::two untracked directories: .serena/ and .superpowers/ (#-#-#). tool scratch state \u2014 almost",
+          "verdict": "propose",
+          "why": "Adding well-known tool-scratch directories to .gitignore is a small, self-contained, uncontroversial repo edit."
+        }
+      ],
+      "pick": {
+        "id": "F27",
+        "key": "cmdpeek::two untracked directories: .serena/ and .superpowers/ (#-#-#). tool scratch state \u2014 almost",
+        "task": "Add .serena/ and .superpowers/ to cmdpeek's .gitignore so the tool-scratch directories stop showing as untracked.",
+        "acceptance_criteria": [
+          "cmdpeek/.gitignore contains entries for .serena/ and .superpowers/",
+          "git status in cmdpeek no longer lists .serena/ or .superpowers/ as untracked",
+          "No other files are modified"
+        ],
+        "risk": "low"
+      }
+    },
+    {
+      "sha": "48132cc9c514b13607a5e52dcc4ecc5a0c61f3c0",
+      "ts": 1787882732,
+      "candidates": 18,
+      "session": "ff060a3f-7754-4e72-9767-06e7c6dbd2b1",
+      "cost_usd": 0.0638,
+      "duration_s": 27.4,
+      "ok": true,
+      "error": "",
+      "verdicts": [
+        {
+          "id": "F1",
+          "key": "support::# unpushed commits \u2014 no off-machine copy of the current runbooks.",
+          "verdict": "never",
+          "why": "Unpushed-commit status observation, not a file change."
+        },
+        {
+          "id": "F2",
+          "key": "support::# modified files from #-#-# evening, still uncommitted # days later.",
+          "verdict": "never",
+          "why": "Concerns uncommitted files the worktree agent cannot see or touch."
+        },
+        {
+          "id": "F3",
+          "key": "support::untracked: scripts/ory/oidc.google.jsonnet (google oidc mapper \u2014 looks load-bearing for the sso path,",
+          "verdict": "never",
+          "why": "Untracked files; requires deciding what's load-bearing vs. scratch."
+        },
+        {
+          "id": "F4",
+          "key": "er-api::# unpushed commits.",
+          "verdict": "never",
+          "why": "Unpushed-commit status observation, not a file change."
+        },
+        {
+          "id": "F5",
+          "key": "er-api::scripts/ory-native/identity.schema.json modified since #-#-#, uncommitted \u2014 same schema file is also dirty",
+          "verdict": "never",
+          "why": "Reconciling drift is a canonicalization decision on uncommitted files."
+        },
+        {
+          "id": "F6",
+          "key": "er-api::note the deviation recorded in t#.#: claims go via context on login-accept,",
+          "verdict": "propose",
+          "why": "README documents behavior that's confirmed wrong; a factual doc correction with no open decision."
+        },
+        {
+          "id": "F7",
+          "key": "er-web::# uncommitted files from #-#-# evening (oidccallback component + spec, register component",
+          "verdict": "never",
+          "why": "Concerns uncommitted files the worktree agent cannot see or touch."
+        },
+        {
+          "id": "F8",
+          "key": "er-web::handoff current-task.json # days stale, still inprogress, and about a completely different",
+          "verdict": "never",
+          "why": "Whether to close or resume the stale handoff is a decision for the developer."
+        },
+        {
+          "id": "F9",
+          "key": "er-web::open questions left dangling in the handoff: the feeldy \u2192 feedly selector",
+          "verdict": "never",
+          "why": "Vague handoff notes without a confirmed file location; stale artifacts, not a scoped fix."
+        },
+        {
+          "id": "F10",
+          "key": "er-web::# local branches, several long dormant: wip (#-#-#, tracks development/experimental), dev/fix (#-#-#,",
+          "verdict": "never",
+          "why": "Branch pruning is a status/ownership decision."
+        },
+        {
+          "id": "F11",
+          "key": "er-web::recorded risk still open: intercepthttpcalls.ts mocks added with permissive empty-array/object shapes, never",
+          "verdict": "never",
+          "why": "Needs investigation/verification, not a mechanical code change."
+        },
+        {
+          "id": "F12",
+          "key": "er_node_api::largest and oldest uncommitted change set in the portfolio \u2014 ~# days",
+          "verdict": "never",
+          "why": "Concerns a large uncommitted change set the worktree agent cannot see."
+        },
+        {
+          "id": "F13",
+          "key": "er_node_api::behind # commits on development/dev while carrying that tree \u2014 a merge/rebase",
+          "verdict": "never",
+          "why": "Behind-upstream status; any merge/rebase is a reconciliation call."
+        },
+        {
+          "id": "F14",
+          "key": "er_node_api::docs/tasks.md uses no checkbox markers, so there is no way to tell",
+          "verdict": "never",
+          "why": "Completion state lives only in the uncommitted diff, invisible to a fresh worktree."
+        },
+        {
+          "id": "F15",
+          "key": "er_node_api::stale branch vorant#/master (#-#-#, no upstream).",
+          "verdict": "never",
+          "why": "Stale-branch status observation."
+        },
+        {
+          "id": "F16",
+          "key": "er-web-test::behind # and dirty at the same time: ecosystem.config.cjs, scripts/dev/pm#webservermanager.ts, scripts/startwebserver.js modified",
+          "verdict": "never",
+          "why": "Concerns uncommitted files and behind-status together."
+        },
+        {
+          "id": "F17",
+          "key": "er-web-test::untracked directory literally named ${workspacefolder}/ (#-#-#) \u2014 an unexpanded vs code variable",
+          "verdict": "never",
+          "why": "Untracked junk directory; report itself says not to delete it in this run."
+        },
+        {
+          "id": "F18",
+          "key": "er-web-test::all recent commits are feat(wip): with duplicate messages \u2014 history is unsquashed",
+          "verdict": "never",
+          "why": "Squashing history is a rewrite of committed history requiring a policy call."
+        }
+      ],
+      "pick": {
+        "id": "F6",
+        "key": "er-api::note the deviation recorded in t#.#: claims go via context on login-accept,",
+        "task": "Update the er-api README's Hydra login/consent claims documentation to match the actual T4.1 implementation (claims passed via context on login-accept, resolved to session.id_token on consent-accept) instead of the outdated literal instructions.",
+        "acceptance_criteria": [
+          "README no longer instructs following the pattern that Hydra v2.1.1's login-accept lacks a session field for",
+          "README explicitly documents the context-to-session.id_token claim-passing flow used in the actual T4.1 code",
+          "No source code files are modified, only documentation",
+          "Existing tests still pass"
+        ],
+        "risk": "low"
+      }
+    },
+    {
+      "sha": "bb9dae960cf8ac4da8990adf3c8416c9950db59f",
+      "ts": 1788487525,
+      "candidates": 23,
+      "session": "252dfec6-5d78-4686-8052-e771a29a62a5",
+      "cost_usd": 0.0691,
+      "duration_s": 26.7,
+      "ok": true,
+      "error": "",
+      "verdicts": [
+        {
+          "id": "F1",
+          "key": "Cross-project priorities::ernodeapi has diverged badly \u2014 # local commits vs # upstream, and",
+          "verdict": "never",
+          "why": "Reconciling divergent SDK versions requires a design decision, not a mechanical edit."
+        },
+        {
+          "id": "F2",
+          "key": "Cross-project priorities::er-web still carries # unremediated audit findings from the #-#-# pass",
+          "verdict": "never",
+          "why": "Report explicitly notes these were deferred as needing security-policy or product decisions."
+        },
+        {
+          "id": "F3",
+          "key": "Cross-project priorities::general/caddy still has no remote at all",
+          "verdict": "never",
+          "why": "Adding a remote/backup is an infrastructure and policy decision, not a file edit."
+        },
+        {
+          "id": "F4",
+          "key": "Cross-project priorities::er-web's handoff has been inprogress for # days and is misleading.",
+          "verdict": "never",
+          "why": "Closing or reopening a handoff is a status decision for the developer."
+        },
+        {
+          "id": "F5",
+          "key": "Cross-project priorities::er-web-test has # modified files sitting #\u2013# days while the branch fell",
+          "verdict": "never",
+          "why": "Involves uncommitted files and a branch-behind status, not a clean file edit."
+        },
+        {
+          "id": "F6",
+          "key": "Cross-project priorities::cleared since the #-#-# report:",
+          "verdict": "never",
+          "why": "Pure status note; no action needed."
+        },
+        {
+          "id": "F7",
+          "key": "er_node_api::two parallel modernizations of the same code under different version numbers (local",
+          "verdict": "never",
+          "why": "Same reconciliation decision as F1."
+        },
+        {
+          "id": "F8",
+          "key": "er_node_api::tasks.md shows # open while # commits sit unpushed \u2014 the doc",
+          "verdict": "never",
+          "why": "Correcting TASKS.md requires resolving the contested branch state first."
+        },
+        {
+          "id": "F9",
+          "key": "er_node_api::stale ref vorant#/master last touched #-#-#.",
+          "verdict": "never",
+          "why": "Deleting a stale ref is not a tracked-file edit and needs a prune decision."
+        },
+        {
+          "id": "F10",
+          "key": "er-web::handoff is stale and factually wrong about repo state. it asserts nothing",
+          "verdict": "never",
+          "why": "Same stale-handoff decision as F4."
+        },
+        {
+          "id": "F11",
+          "key": "er-web::branch clutter, # local branches: dev/fix (#-#-#) has no upstream tracking branch;",
+          "verdict": "never",
+          "why": "Branch deletion needs developer confirmation and isn't a file edit."
+        },
+        {
+          "id": "F12",
+          "key": "er-web::project memory records a real hazard worth keeping in view: the checked-out",
+          "verdict": "never",
+          "why": "This is a memory note to preserve, not a change to make."
+        },
+        {
+          "id": "F13",
+          "key": "er-web-test::# modified files uncommitted, ageing: ecosystem.config.cjs, scripts/dev/pm#webservermanager.ts, scripts/startwebserver.js all last touched #-#-#",
+          "verdict": "never",
+          "why": "Concerns uncommitted files the agent cannot see or touch."
+        },
+        {
+          "id": "F14",
+          "key": "er-web-test::behind # upstream commits, all \"feat(wip): filters update\" from #-#-#/# \u2014 the",
+          "verdict": "never",
+          "why": "Being behind upstream is a status observation."
+        },
+        {
+          "id": "F15",
+          "key": "er-web-test::untracked claude.original.md (the compression backup) and a literal ${workspacefolder}/ directory \u2014 an",
+          "verdict": "never",
+          "why": "Requires discarding untracked files the agent cannot access."
+        },
+        {
+          "id": "F16",
+          "key": "er-web-test::staging (#-#-#) is ahead of the working branch in date but not",
+          "verdict": "never",
+          "why": "Branch-tracking status observation only."
+        },
+        {
+          "id": "F17",
+          "key": "general/caddy::no off-machine backup of the caddy reverse-proxy config. per brain \u2014 work,",
+          "verdict": "never",
+          "why": "Backup strategy is an infrastructure/policy decision outside the repo."
+        },
+        {
+          "id": "F18",
+          "key": "general/caddy::the commit cadence looks automated (\"capture config drift in caddyfile\") \u2014 drift",
+          "verdict": "never",
+          "why": "Observation about review process, not a concrete code change."
+        },
+        {
+          "id": "F19",
+          "key": "general/caddy::related context: brain \u2014 devops also notes caddy has no runbook note",
+          "verdict": "never",
+          "why": "Writing a runbook requires domain knowledge and decisions the report doesn't supply."
+        },
+        {
+          "id": "F20",
+          "key": "cmdpeek::untracked .serena/ and .superpowers/ tool directories (both #-#-#, # days) \u2014 agent-tooling",
+          "verdict": "propose",
+          "why": "Adding known agent-tooling dirs to .gitignore is a small, self-contained, uncontroversial config edit."
+        },
+        {
+          "id": "F21",
+          "key": "cmdpeek::the distribution manifests currently ship a broken install path (a main.zip pointer",
+          "verdict": "never",
+          "why": "Blocked on cutting a real release and explicitly forbids inventing hashes."
+        },
+        {
+          "id": "F22",
+          "key": "frontend-landing-newsapi::# local branches, # of them long dead: recover-news-aggregation (#-#-#), dev# (#-#-#),",
+          "verdict": "never",
+          "why": "Branch pruning needs developer confirmation before deletion."
+        },
+        {
+          "id": "F23",
+          "key": "frontend-landing-newsapi::project memory worth carrying forward: nunjucks (gulp-nunjucks-render) silently evaluates jinja#'s self.blockname() as",
+          "verdict": "never",
+          "why": "Informational memory note, not a change to make."
+        }
+      ],
+      "pick": {
+        "id": "F20",
+        "key": "cmdpeek::untracked .serena/ and .superpowers/ tool directories (both #-#-#, # days) \u2014 agent-tooling",
+        "task": "Add .serena/ and .superpowers/ to cmdpeek's .gitignore so the agent-tooling scratch directories stop showing as dirty state.",
+        "acceptance_criteria": [
+          ".gitignore in cmdpeek includes entries for .serena/ and .superpowers/",
+          "git status no longer lists these directories as untracked",
+          "No other .gitignore entries or files are modified"
+        ],
+        "risk": "low"
+      }
+    },
+    {
+      "sha": "3965dd58140cdcdd5d5f1cb34713ba75ec0c35a2",
+      "ts": 1788660308,
+      "candidates": 5,
+      "session": "60725ed6-3825-4ff3-b82b-fc09e3e9e931",
+      "cost_usd": 0.0478,
+      "duration_s": 8.3,
+      "ok": true,
+      "error": "",
+      "verdicts": [
+        {
+          "id": "F1",
+          "key": "Cross-project priorities::# unpushed commits of the google/oidc identity feature exist only on this",
+          "verdict": "never",
+          "why": "Requires pushing commits to a remote, which is out of scope."
+        },
+        {
+          "id": "F2",
+          "key": "Cross-project priorities::general/caddy still has no remote at all.",
+          "verdict": "never",
+          "why": "Requires creating/configuring a remote, an infra/ownership decision outside the repo."
+        },
+        {
+          "id": "F3",
+          "key": "Cross-project priorities::ernodeapi has forked into two incompatible modernization lines.",
+          "verdict": "never",
+          "why": "Reconcile-vs-abandon between two branch lines is a decision for the developer, not an agent."
+        },
+        {
+          "id": "F4",
+          "key": "Cross-project priorities::er-web's # open audit findings are in the exact code being edited",
+          "verdict": "never",
+          "why": "The open-redirect and fail-open findings are security-policy calls (allowlist design, fail-open vs closed semantics) needing developer decision, not a mechanical fix."
+        },
+        {
+          "id": "F5",
+          "key": "Cross-project priorities::two stale work states need an explicit decision, not more waiting.",
+          "verdict": "never",
+          "why": "Explicitly a status/decision finding about stale handoffs and uncommitted work, not a code change."
+        }
+      ],
+      "pick": null
+    },
+    {
+      "sha": "2ab53304a96a7ae6d7fe47904c64476a65a1d0b5",
+      "ts": 1788746708,
+      "candidates": 6,
+      "session": "a7650ee7-2659-42d8-aac7-0afe817acf1a",
+      "cost_usd": 0.0482,
+      "duration_s": 11.1,
+      "ok": true,
+      "error": "",
+      "verdicts": [
+        {
+          "id": "F1",
+          "key": "Cross-project priorities::# unpushed commits of the google/oidc identity feature still exist only on",
+          "verdict": "never",
+          "why": "Fixing this means pushing commits to a remote, which is outside the repo and needs no approval to skip."
+        },
+        {
+          "id": "F2",
+          "key": "Cross-project priorities::general/caddy has no remote, and it now holds live production-adjacent routing.",
+          "verdict": "never",
+          "why": "Adding a remote requires creating/choosing an external host account and pushing, both outside the repo."
+        },
+        {
+          "id": "F3",
+          "key": "Cross-project priorities::er-web's # open audit findings sit in the exact files this week's",
+          "verdict": "never",
+          "why": "This is a broad audit-remediation list spanning many files and security judgment calls, not one small self-contained edit."
+        },
+        {
+          "id": "F4",
+          "key": "Cross-project priorities::new security-relevant surface is shipping without a review gate.",
+          "verdict": "never",
+          "why": "This calls for a review-process/policy decision, not a code change."
+        },
+        {
+          "id": "F5",
+          "key": "Cross-project priorities::ernodeapi has been forked into two incompatible modernization lines for four days",
+          "verdict": "never",
+          "why": "Reconciling two incompatible modernization branches is exactly the kind of open choice the developer must decide."
+        },
+        {
+          "id": "F6",
+          "key": "Cross-project priorities::two work states have gone stale enough to need a decision rather",
+          "verdict": "never",
+          "why": "This is explicitly a call for the developer to decide whether to close or resume stale work."
+        }
+      ],
+      "pick": null
+    },
+    {
+      "sha": "56e03e3d5d71efc54ae1c410aa4b0939dd5fa502",
+      "ts": 1788833118,
+      "candidates": 29,
+      "session": "615bbcce-b9b9-40a6-af8b-bf6ee95a95d6",
+      "cost_usd": 0.0939,
+      "duration_s": 40.4,
+      "ok": true,
+      "error": "",
+      "verdicts": [
+        {
+          "id": "F1",
+          "key": "Cross-project priorities::the ory/google-sso work is spread uncommitted across three repos at once.",
+          "verdict": "never",
+          "why": "requires committing uncommitted files across three repos, which the agent cannot see or coordinate."
+        },
+        {
+          "id": "F2",
+          "key": "Cross-project priorities::nothing is pushed.",
+          "verdict": "never",
+          "why": "pushing is out of scope."
+        },
+        {
+          "id": "F3",
+          "key": "Cross-project priorities::general/caddy still has no remote at all",
+          "verdict": "never",
+          "why": "adding a remote needs an account/credential decision."
+        },
+        {
+          "id": "F4",
+          "key": "Cross-project priorities::er-web's security backlog has not moved.",
+          "verdict": "never",
+          "why": "fixing 12 open security findings is a broad, multi-decision effort."
+        },
+        {
+          "id": "F5",
+          "key": "Cross-project priorities::the er-web handoff is # days stale and should be closed, not",
+          "verdict": "propose",
+          "why": "closing a stale handoff and moving its two known items into TASKS.md is a small, already-decided, checkable edit."
+        },
+        {
+          "id": "F6",
+          "key": "Cross-project priorities::er-web-test is drifting and probably wants a decision.",
+          "verdict": "never",
+          "why": "explicitly framed as needing a developer decision."
+        },
+        {
+          "id": "F7",
+          "key": "er-api::# uncommitted files, edited #-#-# #:#\u2013#:#. not yet stale, but includes payment.ts",
+          "verdict": "never",
+          "why": "concerns uncommitted files the agent cannot see."
+        },
+        {
+          "id": "F8",
+          "key": "er-api::three modified test files (oryidentityadmin.test.ts, passwordresetsecurity.test.ts, utilsreq.test.ts) \u2014 no evidence in-repo of",
+          "verdict": "never",
+          "why": "concerns uncommitted files and whether to trust them, not a defined edit."
+        },
+        {
+          "id": "F9",
+          "key": "er-api::.claude/memory/patterns.jsonl last written #-#-#; latest entry documents mock-services/article-service-mock.js as a self-contained fake",
+          "verdict": "never",
+          "why": "purely informational, no actionable change."
+        },
+        {
+          "id": "F10",
+          "key": "er-web::# uncommitted paths, the largest working set in the portfolio. includes #",
+          "verdict": "never",
+          "why": "entirely uncommitted/untracked files, invisible to the agent."
+        },
+        {
+          "id": "F11",
+          "key": "er-web::handoff run-all-tests-fix-failures-# still status: inprogress, updatedat #-#-# \u2014 # days stale. two",
+          "verdict": "never",
+          "why": "status observation about a stale handoff, not an instruction."
+        },
+        {
+          "id": "F12",
+          "key": "er-web::two open questions never answered in that handoff: whether to fix the",
+          "verdict": "never",
+          "why": "explicitly unresolved questions needing a developer decision."
+        },
+        {
+          "id": "F13",
+          "key": "er-web::# local branches, # of them stale: auto-search-mode and feature (#-#-#), dev/fix",
+          "verdict": "never",
+          "why": "stale-branch status observation; branch deletion isn't a reviewable file diff."
+        },
+        {
+          "id": "F14",
+          "key": "er-web::recorded hazard worth re-reading before committing (.claude/memory/patterns.jsonl, #-#-#): the checked-out branch has",
+          "verdict": "never",
+          "why": "a caution about uncommitted work and commit hygiene, not a code change."
+        },
+        {
+          "id": "F15",
+          "key": "support::# uncommitted files edited #-#-#, all infra-shaped: .env.example, .env.prod.example, docker-compose.dev.yml, docker-compose.ha.yml, docker-compose.prod.yml,",
+          "verdict": "never",
+          "why": "concerns uncommitted infra config files the agent cannot see."
+        },
+        {
+          "id": "F16",
+          "key": "support::the bridge's test/consent.test.js was modified alongside src/app.js \u2014 no record in-repo of",
+          "verdict": "never",
+          "why": "concerns uncommitted test file and unknown test status."
+        },
+        {
+          "id": "F17",
+          "key": "er_node_api::behind # commits on development/dev while # commits ahead \u2014 the widest",
+          "verdict": "never",
+          "why": "divergence needs reconciliation/merge, explicitly excluded."
+        },
+        {
+          "id": "F18",
+          "key": "er_node_api::docs/ is untracked and has not been touched since #-#-# (# days)",
+          "verdict": "never",
+          "why": "concerns an untracked directory the agent cannot see."
+        },
+        {
+          "id": "F19",
+          "key": "general/caddy::git remote -v returns nothing. brain \u2014 devops flagged this on #-#-#",
+          "verdict": "never",
+          "why": "adding a remote/backup needs external account setup and a policy call."
+        },
+        {
+          "id": "F20",
+          "key": "general/caddy::the jarvis view site block is committed but commented out \u2014 the",
+          "verdict": "never",
+          "why": "enabling the site block depends on a pending manual DNS step, a decision."
+        },
+        {
+          "id": "F21",
+          "key": "er-web-test::behind # and untouched for # days on a wip branch.",
+          "verdict": "never",
+          "why": "stale-branch status observation needing a resume/retire decision."
+        },
+        {
+          "id": "F22",
+          "key": "er-web-test::dirty set is entirely tooling, not product: modified claude.md, ecosystem.config.cjs, scripts/dev/pm#webservermanager.ts, scripts/startwebserver.js;",
+          "verdict": "never",
+          "why": "involves uncommitted/untracked files and directory removal, not a plain commit."
+        },
+        {
+          "id": "F23",
+          "key": "er-web-test::second local branch staging (#-#-#) also idle.",
+          "verdict": "never",
+          "why": "idle-branch status observation."
+        },
+        {
+          "id": "F24",
+          "key": "cmdpeek::# untracked files sitting since #-#-# (# days): docs/status.md, docs/tasks.md, and two",
+          "verdict": "never",
+          "why": "involves committing untracked files the agent cannot see."
+        },
+        {
+          "id": "F25",
+          "key": "cmdpeek::docs/status.md records a task-runner session left mid-flight: execution mode in-place, sequential, no",
+          "verdict": "never",
+          "why": "status observation about a mid-flight session."
+        },
+        {
+          "id": "F26",
+          "key": "cmdpeek::# unpushed commit.",
+          "verdict": "never",
+          "why": "unpushed commit status, pushing is out of scope."
+        },
+        {
+          "id": "F27",
+          "key": "frontend-landing-newsapi::untracked docs/ since #-#-# (# days) \u2014 the oldest untracked artifact in",
+          "verdict": "never",
+          "why": "involves untracked directory and a decide-whether choice."
+        },
+        {
+          "id": "F28",
+          "key": "frontend-landing-newsapi::# local branches, # long-dead: recover-news-aggregation + dev# (#-#), restore-news-aggregation (#-#), dev#",
+          "verdict": "never",
+          "why": "branch deletion isn't a reviewable committed file diff."
+        },
+        {
+          "id": "F29",
+          "key": "frontend-landing-newsapi::.claude/memory/ (#-#-#) records two live gotchas for this repo: nunjucks does not",
+          "verdict": "never",
+          "why": "purely informational memory note, no actionable change."
+        }
+      ],
+      "pick": {
+        "id": "F5",
+        "key": "Cross-project priorities::the er-web handoff is # days stale and should be closed, not",
+        "task": "Close the stale er-web handoff `run-all-tests-fix-failures-20260724` and move its two remaining open items into docs/TASKS.md.",
+        "acceptance_criteria": [
+          "Handoff file's status field changes from in_progress to closed",
+          "docs/TASKS.md gains two new unchecked entries referencing the error-handling.cy.ts date-input visibility failure and the annotateEventTypes.cy.ts console-error flake",
+          "No files other than the handoff file and docs/TASKS.md are modified"
+        ],
+        "risk": "low"
+      }
+    },
+    {
+      "sha": "a69362e06ce98601fc893d852d22486ef6e89b2e",
+      "ts": 1789159449,
+      "candidates": 28,
+      "session": "87563ed1-7343-46f4-82cb-2c68c1cd948b",
+      "cost_usd": 0.0587,
+      "duration_s": 15.9,
+      "ok": true,
+      "error": "",
+      "verdicts": [
+        {
+          "id": "F1",
+          "key": "cmdpeek::# unpushed commit e#b# (since #-#).",
+          "verdict": "never",
+          "why": "Unpushed commit status observation, not an editable change."
+        },
+        {
+          "id": "F2",
+          "key": "cmdpeek::# untracked files dated #-#-#: docs/status.md, docs/tasks.md itself, and a superpowers plan",
+          "verdict": "never",
+          "why": "Requires deciding whether to commit or gitignore the docs backlog."
+        },
+        {
+          "id": "F3",
+          "key": "cmdpeek::last fetch was #-#-#, so the remote state shown here may be",
+          "verdict": "never",
+          "why": "Stale fetch status observation."
+        },
+        {
+          "id": "F4",
+          "key": "er-web::feature is ahead # / behind # vs development/feature and idle since",
+          "verdict": "never",
+          "why": "Branch ahead/behind status observation about local-only commits."
+        },
+        {
+          "id": "F5",
+          "key": "er-web::other stale branches:",
+          "verdict": "never",
+          "why": "List heading of stale branches, not an action."
+        },
+        {
+          "id": "F6",
+          "key": "er-web::auto-search-mode (#-#)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        },
+        {
+          "id": "F7",
+          "key": "er-web::dev/fix (#-#, no upstream)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        },
+        {
+          "id": "F8",
+          "key": "er-web::staging (behind #)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        },
+        {
+          "id": "F9",
+          "key": "er-web::dev/support (#-#)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        },
+        {
+          "id": "F10",
+          "key": "er-web::wip \u2192 development/experimental (#-#)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        },
+        {
+          "id": "F11",
+          "key": "er-web::stash from #-#-#: \"experiments with tag cloud\".",
+          "verdict": "never",
+          "why": "Uncommitted stash the agent cannot see or touch."
+        },
+        {
+          "id": "F12",
+          "key": "er-web::upstream changed since the #-# report: dev/# now tracks origin/test (event-registry org",
+          "verdict": "never",
+          "why": "Requires confirming an upstream/push-target change is intended."
+        },
+        {
+          "id": "F13",
+          "key": "er-web::security (high-level, per brain er page):",
+          "verdict": "never",
+          "why": "High-level security heading, not an actionable item itself."
+        },
+        {
+          "id": "F14",
+          "key": "er-web::brain (#-#) cites an er-web docs/tasks.md from a #-# audit with #",
+          "verdict": "never",
+          "why": "Documents a missing file with no concrete fix to make."
+        },
+        {
+          "id": "F15",
+          "key": "er-web::an open-redirect-class fix is in the log (#-#, plus a #-# guard",
+          "verdict": "never",
+          "why": "Describes a fix already committed; nothing new to do."
+        },
+        {
+          "id": "F16",
+          "key": "er-web::status of the remaining findings is unknown, including a product-access check that",
+          "verdict": "never",
+          "why": "Unknown status of security findings needs investigation/decision, including a policy call on fail-open behavior."
+        },
+        {
+          "id": "F17",
+          "key": "frontend-landing::stash@{#} (#-#-# \"pull autostash\") was never reapplied. it touches .gitignore and deploy.bat",
+          "verdict": "never",
+          "why": "Uncommitted stash the agent cannot see or touch."
+        },
+        {
+          "id": "F18",
+          "key": "frontend-landing::project memory: deploy.bat hard-pins the node version and aborts on a mismatch.",
+          "verdict": "never",
+          "why": "Project memory note, not a finding to act on."
+        },
+        {
+          "id": "F19",
+          "key": "frontend-landing::confirm the committed deploy.bat is the one you want before the next",
+          "verdict": "never",
+          "why": "Explicit request for developer confirmation before deploy."
+        },
+        {
+          "id": "F20",
+          "key": "frontend-landing::a second stash from #-#-# (\"test\").",
+          "verdict": "never",
+          "why": "Uncommitted stash the agent cannot see or touch."
+        },
+        {
+          "id": "F21",
+          "key": "frontend-landing::branch dev (#-#-#) is ahead # of origin/dev.",
+          "verdict": "never",
+          "why": "Branch ahead status observation."
+        },
+        {
+          "id": "F22",
+          "key": "frontend-landing-newsapi::untracked docs/: # seo audit html exports dated #-#-# (ai visibility, content",
+          "verdict": "never",
+          "why": "Requires deciding whether to commit or gitignore the docs."
+        },
+        {
+          "id": "F23",
+          "key": "frontend-landing-newsapi::stash from #-#-# (\"seo\").",
+          "verdict": "never",
+          "why": "Uncommitted stash the agent cannot see or touch."
+        },
+        {
+          "id": "F24",
+          "key": "frontend-landing-newsapi::stale branches:",
+          "verdict": "never",
+          "why": "List heading of stale branches, not an action."
+        },
+        {
+          "id": "F25",
+          "key": "frontend-landing-newsapi::dev (#-#-#): ahead # / behind #, so # commits are local-only",
+          "verdict": "never",
+          "why": "Stale branch status observation about local-only commits."
+        },
+        {
+          "id": "F26",
+          "key": "frontend-landing-newsapi::dev# (#-#)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        },
+        {
+          "id": "F27",
+          "key": "frontend-landing-newsapi::recover-news-aggregation and restore-news-aggregation (#-#, no upstream)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        },
+        {
+          "id": "F28",
+          "key": "frontend-landing-newsapi::recover-from-dangling (#-#, no upstream)",
+          "verdict": "never",
+          "why": "Stale branch status observation."
+        }
+      ],
+      "pick": null
+    }
+  ]
+}

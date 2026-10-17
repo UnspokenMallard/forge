@@ -1,0 +1,1213 @@
+{
+  "revisions": 20,
+  "oldest": 1787449804,
+  "newest": 1789159449,
+  "findings": [
+    {
+      "repo": "Cross-project priorities",
+      "text": "The Ory/SSO work is live across three repos at once and is entirely uncommitted.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`support` is 22 commits ahead of `Event-Registry/master` and unpushed.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er_node_api` has 389 uncommitted files and is 32 commits behind its upstream.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web`'s handoff has been `in_progress` for 33 days and should be closed out or resumed explicitly.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web`'s security backlog is still 12 open findings, unchanged.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`general/caddy` still has no remote at all.",
+      "first_seen": 1787796334,
+      "last_seen": 1788660308,
+      "seen_count": 2,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "22 commits unpushed. Everything in the bullet above exists only on this machine.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "11 uncommitted files, all in `scripts/ory/` \u2014 compose files (dev/ha/prod), `kratos.yml`, `identity.schema.json`, the README, and `login-consent-bridge/src/app.js` + its consent test. Part of the cross-repo change set from item 1.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "Two untracked files: `scripts/error.txt` (a captured error dump, 2026-08-25 15:54 \u2014 decide whether it's evidence worth keeping or noise) and `scripts/ory/oidc.google.jsonnet` (looks load-bearing for Google SSO and is not tracked; easy to lose).",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "No `NEXT-PROMPT.md` despite this being exactly the kind of multi-session, machine-gated rollout the convention exists for.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "4 uncommitted files (+29/\u22121): `globals.d.ts`, `routesUtils.ts`, `scripts/ory-native/identity.schema.json`, `settings-default.json`. Small and coherent \u2014 this is the backend half of the SSO change set, not drift. Fresh (yesterday evening), so not stale, but it belongs in a commit alongside the `er-web` and `support` halves.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "`staging` branch last moved 2026-06-02, ~12 weeks behind `dev`. Not necessarily wrong (that's the release cadence), but worth knowing before the next release QA pass.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "The payment-path fixes noted above are now committed \u2014 the \"payment changes sitting uncommitted\" flag from the 2026-08-19 report is resolved.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "**Handoff is 33 days stale and blocked on evidence that no longer exists.** Its next-step field points at `$TEMP/claude/chart-options-revert-check.log` and notes that `cypress/screenshots/` is wiped at the start of every run. It also records that two fix attempts on `waitForElementInvisible` failed and were reverted per the stop-after-two rule, and that the cascading \"Choose profile name\" modal (a real feature in `saveProfile.component.ts` that the test command doesn't handle) is **not understood**. Two items remain genuinely unresolved: `error-handling.cy.ts`'s date-input visibility failure and `annotateEventTypes.cy.ts`'s cosmetic console-error flake. Open questions left hanging: whether to fix the `feeldy` component-selector typo, and whether stale `cypress/logs/*.txt` files from Dec 2025/Feb 2026 should be cleaned or gitignored.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "8 uncommitted files (+77/\u221211) \u2014 `oidcCallback` and `register` components plus their specs, the login/register templates, `login.cy.ts`, and `types/er-user.d.ts`. The frontend half of the SSO change set. Fresh, but uncommitted.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "**7 local branches, most dormant:** `auto-search-mode` and `feature` (both 2026-08-04), `dev/fix` (2026-07-22, **no upstream** \u2014 local-only), `staging` (2026-07-21), `dev/support` (2026-07-20), `wip` (2026-06-12, tracks `development/experimental`). `dev/fix` is the one to check before it's forgotten.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Project memory records a real hazard worth remembering: the checked-out branch has changed mid-session from outside the session before, silently redirecting a commit onto the wrong branch. With three repos' worth of uncommitted SSO work in flight, verify the branch immediately before each commit.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "**389 uncommitted paths.** Mixed staged (`A`/`D`/`M`) and unstaged (`MM`, `AM`) states \u2014 `AGENTS.md`, `CLAUDE.md`, `MIGRATION.md`, `CHANGELOG.md`, `README.md`, `package.json` and `package-lock.json` all have staged *and* unstaged versions. Given the recorded lesson that a bare `git commit` commits the whole staged index regardless of intent, this tree needs an explicit reset-and-restage before any commit, not an incremental one.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "**Behind upstream by 32 commits** while carrying a 389-file local change set. The longer this waits, the worse the reconciliation.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "Two weeks stale at the oldest edit (2026-08-11), five days at the newest.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "`TASKS.md`'s own constraints say \"do not commit unless the user asks\" \u2014 which explains the state, but the ask is overdue.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Branch is **behind origin by 7** with 3 uncommitted files, so a fetch/rebase will need care.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Uncommitted: `ecosystem.config.cjs`, `scripts/dev/pm2WebServerManager.ts`, `scripts/startWebServer.js` \u2014 dev-server plumbing, stale since 2026-08-13.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "**A literal `${workspaceFolder}/` directory exists in the repo root**, untracked, created 2026-08-12. That's an unexpanded VS Code variable that some task/launch config wrote out as a real path. Harmless in itself but it means a config is misconfigured, and it will keep reappearing. (Flagged only \u2014 not deleted, per read-only scope.)",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "`staging` (2026-08-11) is slightly ahead of the feature branch in time; check which one is actually current before resuming.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "**No upstream tracking branch** (`## main`, no remote shown) on a repo whose one remaining task is publishing a release. Whatever remote the release is meant to go to isn't wired up locally.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "Two untracked directories: `.serena/` and `.superpowers/` (2026-08-24). Tool scratch state \u2014 almost certainly `.gitignore` entries rather than commits.",
+      "first_seen": 1787796334,
+      "last_seen": 1787796334,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "28 unpushed commits \u2014 no off-machine copy of the current runbooks.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "14 modified files from 2026-08-25 evening, still uncommitted 2 days later.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "Untracked: `scripts/ory/oidc.google.jsonnet` (Google OIDC mapper \u2014 looks load-bearing for the SSO path, not just scratch), `server-configs/IJS3/v002_2026-08-14/reload-caddy.bat`, and `scripts/error.txt` (likely a stray log \u2014 check before it gets committed by accident).",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "2 unpushed commits.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "`scripts/ory-native/identity.schema.json` modified since 2026-08-25, uncommitted \u2014 same schema file is also dirty in `support/scripts/ory/`. Two copies drifting independently; reconcile which is canonical.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "Note the deviation recorded in T4.1: claims go via `context` on login-accept, resolved to `session.id_token` on consent-accept, because Hydra v2.1.1's login-accept has no `session` field. Correct, but it contradicts the README's literal instructions \u2014 anyone following the README cold will \"fix\" it back.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "8 uncommitted files from 2026-08-25 evening (`oidcCallback` component + spec, `register` component + spec + template, `login.tpl.html`, `cypress/e2e/login.cy.ts`, `types/er-user.d.ts`) \u2014 the frontend half of the Ory pass; belongs with the `support`/`er-api` commits.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Handoff `current-task.json` **34 days stale**, still `in_progress`, and about a completely different task (Cypress suite) than the current tree. Highest-confusion artifact in the portfolio for a cold agent.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Open questions left dangling in the handoff: the `feeldy` \u2192 `feedly` selector typo; stale `cypress/logs/*.txt` from Dec 2025 / Feb 2026.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "7 local branches, several long dormant: `wip` (2026-06-12, tracks `development/experimental`), `dev/fix` (2026-07-22, **no upstream**), `dev/support` (2026-07-20), `staging` (2026-07-21), `auto-search-mode` / `feature` (both 2026-08-04).",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Recorded risk still open: `interceptHTTPCalls.ts` mocks added with permissive empty-array/object shapes, never verified against specs that exercise richer behavior on those pages.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "Largest and oldest uncommitted change set in the portfolio \u2014 ~16 days old, ~40+ files, much of it already staged. One `git clean` or bad checkout loses two weeks of modernization work.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "**Behind 32 commits** on `development/dev` while carrying that tree \u2014 a merge/rebase against upstream will be painful and gets worse every day.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "`docs/TASKS.md` uses no checkbox markers, so there is no way to tell from the file which of the 10 tasks are done. Progress state exists only in the diff.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "Stale branch `vorant94/master` (2022-05-03, no upstream).",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Behind 7 and dirty at the same time: `ecosystem.config.cjs`, `scripts/dev/pm2WebServerManager.ts`, `scripts/startWebServer.js` modified 2026-08-13 \u2014 14 days stale, local dev-server plumbing, probably not intended to ship.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Untracked directory literally named `${workspaceFolder}/` (2026-08-12) \u2014 an unexpanded VS Code variable created a junk directory. Safe to delete after a look, but not by this run.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "All recent commits are `feat(wip):` with duplicate messages \u2014 history is unsquashed WIP.",
+      "first_seen": 1787882732,
+      "last_seen": 1787882732,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er_node_api` has diverged badly \u2014 7 local commits vs 32 upstream, and the two sides are modernizing the same SDK under different version numbers.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web` still carries 12 unremediated audit findings from the 2026-06-25 pass",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`general/caddy` still has no remote at all",
+      "first_seen": 1788487525,
+      "last_seen": 1788833118,
+      "seen_count": 2,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web`'s handoff has been `in_progress` for 41 days and is misleading.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web-test` has 4 modified files sitting 5\u201321 days while the branch fell 7 commits behind upstream.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "Cleared since the 2026-08-19 report:",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "Two parallel modernizations of the same code under different version numbers (local 10.0.0 vs upstream 11.0.0). Merging blind will produce a rate-limiter/logger conflict at minimum \u2014 both sides touched the mutex throttling and Logger paths.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "`TASKS.md` shows 0 open while 7 commits sit unpushed \u2014 the doc no longer reflects the actual state of the branch.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "Stale ref `vorant94/master` last touched 2022-05-03.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "**Handoff is stale and factually wrong about repo state.** It asserts nothing was committed; the tree is clean and the work landed in `4e01e14` (2026-07-27). 41 days old, `in_progress`, with 5+ unrelated commits on the same branch since. BRAIN flagged this on 2026-08-19 at 26 days \u2014 it has simply aged another 15 days.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "**Branch clutter, 7 local branches:** `dev/fix` (2026-07-22) has **no upstream tracking branch**; `wip` (2026-06-12), `dev/support` (2026-07-20), `staging` (2026-07-21), `auto-search-mode` and `feature` (both 2026-08-04) are all dormant.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Project memory records a real hazard worth keeping in view: the checked-out branch changed mid-session from outside the session (a `checkout` + `pull --rebase` landed while a commit was in progress), silently redirecting a commit onto the wrong branch.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "**4 modified files uncommitted, ageing:** `ecosystem.config.cjs`, `scripts/dev/pm2WebServerManager.ts`, `scripts/startWebServer.js` all last touched **2026-08-13 (21 days)**; `CLAUDE.md` **2026-08-29 (5 days)**. Diff is 337 insertions / 400 deletions across 4 files \u2014 the bulk is the CLAUDE.md caveman compression (683 lines changed), the rest is real dev-server tooling change.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "**Behind 7 upstream commits**, all \"feat(wip): filters update\" from 2026-08-16/17 \u2014 the same working area as the local dirty scripts.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Untracked `CLAUDE.original.md` (the compression backup) and a literal `${workspaceFolder}/` directory \u2014 an unexpanded VS Code variable that got created as a real folder. Both should be gitignored or removed; the `${workspaceFolder}` dir is almost certainly accidental.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "`staging` (2026-08-11) is ahead of the working branch in date but not being tracked against.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "general/caddy",
+      "text": "**No off-machine backup of the Caddy reverse-proxy config.** Per BRAIN \u2014 Work, `beta.eventregistry.org` runs *entirely* on Caddy as of 2026-08-03, and per BRAIN \u2014 DevOps the blue-green deployment strategy lives in this Caddyfile. A disk loss on this machine loses the only versioned copy. BRAIN \u2014 DevOps recorded this exact finding on 2026-08-19 \u2014 still unaddressed.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "general/caddy",
+      "text": "The commit cadence looks automated (\"Capture config drift in Caddyfile\") \u2014 drift is being *recorded* but not *reviewed*; nothing indicates anyone reads the diffs.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "general/caddy",
+      "text": "Related context: BRAIN \u2014 DevOps also notes Caddy has no runbook note in the vault (\"confidence is medium until a runbook exists\"), so this repo is the closest thing to Caddy documentation that exists.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "Untracked `.serena/` and `.superpowers/` tool directories (both 2026-08-24, 10 days) \u2014 agent-tooling scratch, should be gitignored rather than left showing up as dirty state on every check.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "The distribution manifests currently ship a broken install path (a `main.zip` pointer and a hashless template), so the packaged install story is non-functional until that one open task is done.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "**7 local branches, 5 of them long dead:** `recover-news-aggregation` (2025-04-02), `dev_2` (2025-04-01), `restore-news-aggregation` (2025-04-01), `dev_1` (2024-06-04), `dev` (2024-03-12), `recover-from-dangling` (2023-04-03). Three of them (`recover-news-aggregation`, `restore-news-aggregation`, `recover-from-dangling`) have **no upstream tracking branch** \u2014 they read as leftovers from a past recovery incident and are safe candidates for pruning once someone confirms nothing unique is on them.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "Project memory worth carrying forward: Nunjucks (`gulp-nunjucks-render`) silently evaluates Jinja2's `self.blockname()` as undefined rather than erroring \u2014 use a YAML front-matter flag instead.",
+      "first_seen": 1788487525,
+      "last_seen": 1788487525,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "35 unpushed commits of the Google/OIDC identity feature exist only on this disk.",
+      "first_seen": 1788660308,
+      "last_seen": 1788660308,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er_node_api` has forked into two incompatible modernization lines.",
+      "first_seen": 1788660308,
+      "last_seen": 1788660308,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web`'s 12 open audit findings are in the exact code being edited right now.",
+      "first_seen": 1788660308,
+      "last_seen": 1788660308,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "Two stale work states need an explicit decision, not more waiting.",
+      "first_seen": 1788660308,
+      "last_seen": 1788660308,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "40 unpushed commits of the Google/OIDC identity feature still exist only on this disk \u2014 and the pile grew by 5 overnight.",
+      "first_seen": 1788746708,
+      "last_seen": 1788746708,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`general/caddy` has no remote, and it now holds live production-adjacent routing.",
+      "first_seen": 1788746708,
+      "last_seen": 1788746708,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web`'s 12 open audit findings sit in the exact files this week's work is editing.",
+      "first_seen": 1788746708,
+      "last_seen": 1788746708,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "New security-relevant surface is shipping without a review gate.",
+      "first_seen": 1788746708,
+      "last_seen": 1788746708,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er_node_api` has been forked into two incompatible modernization lines for four days with no decision.",
+      "first_seen": 1788746708,
+      "last_seen": 1788746708,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "Two work states have gone stale enough to need a decision rather than more waiting.",
+      "first_seen": 1788746708,
+      "last_seen": 1788746708,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "The Ory/Google-SSO work is spread uncommitted across three repos at once.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "Nothing is pushed.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web`'s security backlog has not moved.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "The `er-web` handoff is 45 days stale and should be closed, not resumed.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "Cross-project priorities",
+      "text": "`er-web-test` is drifting and probably wants a decision.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "11 uncommitted files, edited 2026-09-06 16:47\u201318:13. Not yet stale, but includes `payment.ts` \u2014 BRAIN \u2014 Work rates the Braintree\u2192Stripe migration **CRITICAL risk**, so payment-path edits should not sit uncommitted.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "Three modified test files (`oryIdentityAdmin.test.ts`, `passwordResetSecurity.test.ts`, `utilsReq.test.ts`) \u2014 no evidence in-repo of whether the suite currently passes.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-api",
+      "text": "`.claude/memory/patterns.jsonl` last written 2026-07-23; latest entry documents `mock-services/article-service-mock.js` as a self-contained fake for the serverArticles backend (ports 8092\u20138094). Predates all current work \u2014 no live blockers recorded there.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "**40 uncommitted paths**, the largest working set in the portfolio. Includes 8 Cypress e2e specs, `authentication.service.ts`, `httpInterceptor.service.ts`, `kratosAdmin.service.ts`, 6 templates, plus untracked `oidcCallback401.cy.ts`, `httpInterceptor.service.spec.ts`, `docs/`, and a stray `trusted-app-navbar.png` in the repo root.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Handoff `run-all-tests-fix-failures-20260724` still `status: in_progress`, `updated_at` 2026-07-24 \u2014 **45 days stale**. Two unresolved items survive in it: `error-handling.cy.ts` date-input visibility failure, and an `annotateEventTypes.cy.ts` cosmetic console-error flake.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Two open questions never answered in that handoff: whether to fix the `feeldy` component-selector typo in `feedly.component.ts`, and whether stale `cypress/logs/*.txt` from Dec 2025 / Feb 2026 should be gitignored.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "**7 local branches**, 5 of them stale: `auto-search-mode` and `feature` (2026-08-04), `dev/fix` (2026-07-22), `staging` (2026-07-21), `dev/support` (2026-07-20), `wip` (2026-06-12).",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Recorded hazard worth re-reading before committing (`.claude/memory/patterns.jsonl`, 2026-07-31): the checked-out branch has changed mid-session from outside the Claude session before, silently landing a commit on the wrong branch. With 40 dirty files and 23 unpushed commits, verify `git branch --show-current` immediately before each commit.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "8 uncommitted files edited 2026-09-06, all infra-shaped: `.env.example`, `.env.prod.example`, `docker-compose.dev.yml`, `docker-compose.ha.yml`, `docker-compose.prod.yml`, `kratos.yml`, and the login-consent-bridge's `src/app.js` + `test/consent.test.js`. Uncommitted compose/config for the auth stack is the kind of drift the DevOps BRAIN calls out \u2014 it is the deployable artifact, and right now it exists only in the working tree.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "support",
+      "text": "The bridge's `test/consent.test.js` was modified alongside `src/app.js` \u2014 no record in-repo of whether it passes.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "**Behind 32 commits** on `development/dev` while 7 commits ahead \u2014 the widest divergence in the portfolio. The modernization work was done against a base that has moved substantially; the longer this sits, the worse the reconciliation.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er_node_api",
+      "text": "`docs/` is untracked and has not been touched since **2026-08-20 (18 days)** \u2014 the whole task backlog above is unversioned and would be lost with a clean checkout.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "general/caddy",
+      "text": "`git remote -v` returns nothing. BRAIN \u2014 DevOps flagged this on 2026-08-19 as \"config drift captured locally but no off-machine backup,\" high confidence; **still true 19 days later**, and the repo has gained live infra config (ntfy sink, Jarvis view block) since.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "general/caddy",
+      "text": "The Jarvis view site block is committed but **commented out** \u2014 the site block and its DNS record are still a pending manual step, and the commented block is the only in-repo record of that.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Behind 7 and untouched for 28 days on a WIP branch.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Dirty set is entirely tooling, not product: modified `CLAUDE.md`, `ecosystem.config.cjs`, `scripts/dev/pm2WebServerManager.ts`, `scripts/startWebServer.js`; untracked `CLAUDE.original.md` (a caveman-compress backup) and a literal directory named `${workspaceFolder}/` \u2014 an unexpanded VS Code variable that got created as a real folder. Oldest of these dates to 2026-08-29; the `${workspaceFolder}/` dir is junk and safe to remove once confirmed empty.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web-test",
+      "text": "Second local branch `staging` (2026-08-11) also idle.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "4 untracked files sitting since **2026-08-24 (14 days)**: `docs/STATUS.md`, `docs/TASKS.md`, and two `docs/superpowers/` plan/spec files. The TASKS.md holding the one remaining release step is itself untracked \u2014 commit it or the backlog disappears with the working directory.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "`docs/STATUS.md` records a task-runner session left mid-flight: execution mode `in-place`, sequential, no branch, no worktree.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "1 unpushed commit.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "Untracked `docs/` since **2026-08-06 (32 days)** \u2014 the oldest untracked artifact in the portfolio. Worth a look: either it holds something (commit it) or it is empty scaffolding (delete it).",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "**7 local branches**, 6 long-dead: `recover-news-aggregation` + `dev_2` (2025-04), `restore-news-aggregation` (2025-04), `dev_1` (2024-06), `dev` (2024-03), `recover-from-dangling` (2023-04). These are recovery branches from old incidents and are pure noise now.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "`.claude/memory/` (2026-07-24) records two live gotchas for this repo: Nunjucks does not support Jinja2's `self.blockname()` (silently falsy \u2014 use a YAML front-matter flag instead), and that front-matter \u2192 Nunjucks context is this repo's established convention.",
+      "first_seen": 1788833118,
+      "last_seen": 1788833118,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "1 unpushed commit `e594b62` (since 09-03).",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "4 untracked files dated 2026-08-24: `docs/STATUS.md`, `docs/TASKS.md` itself, and a superpowers plan + spec for the \"just-installed loop\". They were invisible until the global gitignore stopped ignoring `docs/` (2026-09-06), so this isn't abandoned work. Still, the task backlog is not in git: commit it or ignore it per-repo.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "cmdpeek",
+      "text": "Last fetch was 2026-08-26, so the remote state shown here may be stale.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "`feature` is ahead 28 / behind 21 vs `development/feature` and idle since 08-04. **28 commits are local-only.**",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Other stale branches:",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "`auto-search-mode` (08-04)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "`dev/fix` (07-22, no upstream)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "`staging` (behind 59)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "`dev/support` (07-20)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "`wip` \u2192 `development/experimental` (06-12)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Stash from 2026-07-28: \"Experiments With Tag Cloud\".",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Upstream changed since the 09-09 report: `dev/1` now tracks `origin/test` (Event-Registry org remote); previously it tracked `development/dev/1`. A bare `git push` from `dev/1` now targets the org's `test` branch. Confirm that's intended.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Security (high-level, per BRAIN ER page):",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "BRAIN (08-19) cites an er-web `docs/TASKS.md` from a 06-25 audit with 12 open findings. It was never in git (`docs/` was globally gitignored until 2026-09-06) and it no longer exists on disk.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "An open-redirect-class fix is in the log (07-24, plus a 09-07 guard against malformed escapes).",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "unclear",
+      "why": ""
+    },
+    {
+      "repo": "er-web",
+      "text": "Status of the remaining findings is unknown, including a product-access check that fails open when the profile fails to load.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing",
+      "text": "`stash@{0}` (2026-08-17 \"Pull autostash\") was never reapplied. It touches `.gitignore` and `deploy.bat` (18 lines, mostly removals).",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing",
+      "text": "Project memory: `deploy.bat` hard-pins the Node version and aborts on a mismatch.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing",
+      "text": "Confirm the committed `deploy.bat` is the one you want before the next deploy.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing",
+      "text": "A second stash from 2020-10-13 (\"test\").",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing",
+      "text": "Branch `dev` (2025-01-09) is ahead 1 of `origin/dev`.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "Untracked `docs/`: 5 SEO audit HTML exports dated 2026-08-05 (AI visibility, content gap, keyword research, site explorer, technical audit). They became visible on 2026-09-06, when the global gitignore stopped ignoring `docs/`. BRAIN's SEO backlog is \"open, not yet started\", and these are its natural input. Commit them or ignore them per-repo.",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "propose",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "Stash from 2026-03-25 (\"SEO\").",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "Stale branches:",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "`dev` (2024-03-12): ahead 42 / behind 1, so **42 commits are local-only**",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "`dev_2` (2025-04)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 2,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "`recover-news-aggregation` and `restore-news-aggregation` (2025-04, no upstream)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    },
+    {
+      "repo": "frontend-landing-newsapi",
+      "text": "`recover-from-dangling` (2023-04, no upstream)",
+      "first_seen": 1789159449,
+      "last_seen": 1789159449,
+      "seen_count": 1,
+      "label": "never",
+      "why": ""
+    }
+  ]
+}

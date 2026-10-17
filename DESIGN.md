@@ -50,3 +50,51 @@ not unattended work. Merging the two worktree mechanisms is a later, separate de
 3. Move in this order: earned and replay (read-only), review ledger, policy, then the
    implementer and the three handlers.
 4. Selftest after every step; no behavior change is the bar for this split.
+
+## Decisions at build time (Anze, 2026-10-17)
+
+| Question | Decision |
+|---|---|
+| Tables | `review_items` and `classifications` move to `state/forge.db`; `escalations` stays with `brain.py`, `actions` with the ladder |
+| Coupling | Jarvis injects a small host interface (`forge/host.py`, bound by `~/.jarvis/daemon/forge_host.py`); Forge imports nothing from `~/.jarvis` |
+| Files | G15 record, corpora and `REVIEW-QUEUE.md` move to `state/`; corpora copied and checked byte-equal first |
+| Queue, worktrees | stay at `~/.jarvis/queue` and `~/.jarvis/worktrees`; Forge reads the paths (`store.QUEUE_PATH`, `store.WORKTREES`) |
+
+## As built (2026-10-17)
+
+- `forge/store.py` (paths from `FORGE_HOME`, the intake and checkouts from `JARVIS_HOME`; tests set both to
+  scratch), `host.py`, `review.py`, `earned.py`, `policy.py`, `replay.py`, `g15.py`, `proposer.py`,
+  `findings.py`, `implementer.py`, and the job bodies `queue.py` (`dispatch`), `delegation.py` (`verify`),
+  `originate.py` (`originate`); `cli.py` behind `bin/forge`; `tests/test_forge.py`.
+- The host: `run_process`, `notify`, `record_limit`, `permit`, `record_outcome`, `brain_allowed`,
+  `brain_work`, `brain_cli_path`, `ORIGINATION`, `scope_of`, `provider_of`, `env_for`, `env_for_path`,
+  `SCOPES`, `load_config` (Jarvis's config.toml), `connect` (jarvis.db: events, actions, brain_calls). An
+  unbound name raises `HostError`; only `load_config` and `connect` have a read-only fallback, for the CLI.
+  Jarvis's binding forwards at call time, so the selftest's replacements of `core.notify` etc. reach Forge.
+- Jarvis keeps thin handlers (`handlers/queue.py`, `delegation.py`, `originate.py`, `review_check.py`,
+  `corpus_capture.py` which runs `forge corpus capture` in a child), and imports `forge.review`,
+  `forge.policy`, `forge.g15`, `forge.earned` where it read them before (brain, main, ping, webview,
+  memorysync, status.py, the morning digest, run-issue-triage, Sentinel's config-drift check).
+- Copied with their rows: `review_items` (2, ids kept) and `classifications` (29,390, new ids; a delta
+  copy after the restart caught the rows the old process wrote). Files: `state/g15-corpus.json`,
+  `state/g15-replay.json` (tracked in this repo by `!` lines, as they were in Jarvis's), `state/corpora/`
+  (16 MB, identical). Backup `~/.jarvis/jarvis.db.bak-forge`. Old tables and file copies stay in Jarvis
+  until Anze confirms dropping them.
+- Behaviour checks after the restart: G15 still PASS (3 agreed, 0 rejected, 54 never), the policy gate still
+  SUPPLY-BLOCKED, burn-replay 0 unexplained false positives, `queue-dispatch` "no pending entries",
+  new classifications landing in `forge.db`.
+
+Differs from the design above, on inspection:
+
+- `playbook.py` stays in Jarvis: it is the incident playbook (fixed steps per alert key for the ping and
+  the HUD), not part of the work pipeline.
+- `review.py` has no second table; the `CREATE TABLE IF NOT EXISTS does` hit was a comment.
+- `[implementer]`, `[review]`, `[brain]` and `[[actions]]` stay in Jarvis's `config.toml`, read through the
+  host: they are Jarvis's decisions about what work is allowed, and the HUD's config editor edits them there.
+  Forge has no config.toml yet.
+- `g15-replay.py` and `g15-corpus.py` stay in `~/.jarvis`: they read the portfolio report's history from
+  Jarvis's git and call `brain.command`. They now import `forge.g15` / `forge.findings` and write
+  `~/.forge/state`.
+- `replay.py`'s corpora also feed Jarvis's `burn-replay.py`, which reads `~/.forge/state/corpora` now.
+- Jarvis hot-reloads a changed handler file; Forge's modules are not hot-reloaded, so a Forge code change
+  needs `~/.jarvis/restart.sh`.
