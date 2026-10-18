@@ -25,7 +25,8 @@ JARVIS = Path(os.environ.get("JARVIS_HOME", Path.home() / ".jarvis"))
 QUEUE_PATH = JARVIS / "queue"
 WORKTREES = JARVIS / "worktrees"
 DELEGATION = JARVIS / "delegation"
-REPORT = JARVIS / "portfolio-report.md"
+# The portfolio advisor's report, written by Analyst since 2026-10-18 (was ~/.jarvis/portfolio-report.md).
+REPORT = Path(os.environ.get("ANALYST_HOME", Path.home() / ".analyst")) / "state" / "reports" / "portfolio" / "latest.md"
 
 # A child of Jarvis's "jarvis" logger, so Forge's lines land in the same log with the same handlers.
 log = logging.getLogger("jarvis.forge")
