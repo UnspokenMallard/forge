@@ -1,8 +1,9 @@
 # Next prompt: Forge
 
-DONE 2026-10-17: Forge is built and live (`~/.forge/DESIGN.md`, "As built"; Jarvis commit "Move the work
-pipeline, review ledger, policy and corpora into Forge"). What is left is a check of the first night and
-cleanup that waits on Anze.
+DONE 2026-10-18: Forge is built and live (`~/.forge/DESIGN.md`, "As built"; Jarvis commit "Move the work
+pipeline, review ledger, policy and corpora into Forge"). The first-night check passed and the cleanup is
+done (old tables dropped, 655 old classification rows exported to `state/classifications-pre-cutover.json`,
+old files deleted). Nothing is left; the table below is the record.
 
 ## When to fire this
 

@@ -78,8 +78,11 @@ not unattended work. Merging the two worktree mechanisms is a later, separate de
 - Copied with their rows: `review_items` (2, ids kept) and `classifications` (29,390, new ids; a delta
   copy after the restart caught the rows the old process wrote). Files: `state/g15-corpus.json`,
   `state/g15-replay.json` (tracked in this repo by `!` lines, as they were in Jarvis's), `state/corpora/`
-  (16 MB, identical). Backup `~/.jarvis/jarvis.db.bak-forge` deleted 2026-10-18. Old tables and file copies stay in Jarvis
-  until Anze confirms dropping them.
+  (16 MB, identical). Backup `~/.jarvis/jarvis.db.bak-forge` deleted 2026-10-18.
+- Cleanup done 2026-10-18 (Anze confirmed): `review_items` and `classifications` dropped from `jarvis.db`; the 655
+  classification rows older than Forge's 30-day retention exported to `state/classifications-pre-cutover.json`
+  first; `~/.jarvis/corpora`, `REVIEW-QUEUE.md`, `g15-corpus.json`, `g15-replay.json` deleted. Since then other
+  sessions changed `store.REPORT` (Analyst's report) and the host's `record_limit` to `alert_limit` (Gateway).
 - Behaviour checks after the restart: G15 still PASS (3 agreed, 0 rejected, 54 never), the policy gate still
   SUPPLY-BLOCKED, burn-replay 0 unexplained false positives, `queue-dispatch` "no pending entries",
   new classifications landing in `forge.db`.
