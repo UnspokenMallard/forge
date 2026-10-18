@@ -78,7 +78,7 @@ not unattended work. Merging the two worktree mechanisms is a later, separate de
 - Copied with their rows: `review_items` (2, ids kept) and `classifications` (29,390, new ids; a delta
   copy after the restart caught the rows the old process wrote). Files: `state/g15-corpus.json`,
   `state/g15-replay.json` (tracked in this repo by `!` lines, as they were in Jarvis's), `state/corpora/`
-  (16 MB, identical). Backup `~/.jarvis/jarvis.db.bak-forge`. Old tables and file copies stay in Jarvis
+  (16 MB, identical). Backup `~/.jarvis/jarvis.db.bak-forge` deleted 2026-10-18. Old tables and file copies stay in Jarvis
   until Anze confirms dropping them.
 - Behaviour checks after the restart: G15 still PASS (3 agreed, 0 rejected, 54 never), the policy gate still
   SUPPLY-BLOCKED, burn-replay 0 unexplained false positives, `queue-dispatch` "no pending entries",
