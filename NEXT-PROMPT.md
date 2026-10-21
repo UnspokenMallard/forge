@@ -29,14 +29,15 @@ covers these rows too. The rule stays: this component measures or knows; Jarvis 
   reject into the review and originate prompts; count "accepted" only when merged and not reverted
   after 7 days.
 - **A25 (Phase 2)** originate-task has been disabled since 10-01 (0 picks in 14 runs) and
-  queue-dispatch polls an empty queue every 5 minutes. Anze chooses re-enable or retire (D9).
+  queue-dispatch polls an empty queue every 5 minutes. Decided 2026-10-21 (D9): retire originate-task;
+  keep queue-dispatch for hand-written entries, polled less often (hourly).
 - **A38 (Phase 3)** issue-triage is designated to move here from Analyst.
 - **A39 (Phase 4)** `forge/delegation.py:172` docstring is out of date.
 
 | When (earliest useful, not a deadline) | Step | Waits on |
 |---|---|---|
 | with Phase 1 | A16 | Phase 1 approval |
-| after D9 | A25: re-enable with the A16 feedback, or retire both jobs | Anze |
+| with Phase 2 | A25: remove originate-task, slow queue-dispatch to hourly | Phase 2 approval |
 
 ## A: advance the work
 
