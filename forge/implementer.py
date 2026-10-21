@@ -92,7 +92,7 @@ def _rule_path(path: Path) -> str:
     return "/" + posix if posix.startswith("/") and not posix.startswith("//") else posix
 
 
-FLAGS = ["--strict-mcp-config", "--restricted", "--safe-mode"]
+FLAGS = ["--restricted", "--safe-mode"]  # --strict-mcp-config comes from gateway.agent.command()
 
 
 def allow_rules(worktree: Path) -> list[str]:
