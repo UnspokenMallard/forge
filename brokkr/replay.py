@@ -226,7 +226,8 @@ def capture_stream(name: str, rows: Iterable[Mapping[str, Any]], cols: tuple[str
 # still exists the day someone needs to re-run one.
 #
 # Since 2026-10-24 the sources are Mimir's: Jarvis's events queue, and the
-# `jarvis.actions` and `fafnir.provider_call` telemetry streams. A record keeps
+# `jarvis.action` records (a verdict's outcome is filled in later, so they are records) and the
+# `fafnir.provider_call` telemetry stream. A record keeps
 # the columns the old tables had, so a corpus captured before the move merges
 # with one captured after it.
 # --------------------------------------------------------------------------
@@ -259,6 +260,15 @@ def _stream(stream: str) -> Callable[[], Iterable[Mapping[str, Any]]]:
     return rows
 
 
+def _records(kind: str) -> Callable[[], Iterable[Mapping[str, Any]]]:
+    """Every record of a kind, oldest first, as its data with the record's key as `id`."""
+    def rows() -> Iterable[Mapping[str, Any]]:
+        # shortcut: one page of 5000; Jarvis keeps its actions 90 days (~700 rows). Page by `since` if that grows 7x.
+        for r in mr.query(kind=kind, order="asc", limit=5000):
+            yield {**r["data"], "id": r["key"]}
+    return rows
+
+
 # (corpus, rows, columns, key column, note). The events corpus keeps `started_at` since 2026-09-13:
 # burn-replay.py times a stuck flag from it, the way the live detector does, and rows captured
 # without it can only be replayed on the queue-wait-inclusive upper bound.
@@ -273,7 +283,7 @@ STANDARD = (
     ),
     (
         "actions",
-        _stream("jarvis.actions"),
+        _records("jarvis.action"),
         ("id", "ts", "action", "target", "tier", "authorized_by", "decision",
          "shadow", "outcome", "evidence"),
         "id",

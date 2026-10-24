@@ -18,7 +18,7 @@ host binds the callables once at startup (`daemon/brokkr_host.py`), and a test b
 
 Unbound names raise HostError, never return a default that looks like an answer. `load_config`
 has a read-only stdlib fallback so the CLI works without a daemon. Jarvis's events, actions and
-brain calls are read from Mimir (`jarvis.events`, `jarvis.actions`, `jarvis.brain_calls`).
+brain calls are read from Mimir (the `jarvis.events` queue, `jarvis.action` records, the `jarvis.brain_calls` stream).
 """
 from __future__ import annotations
 
