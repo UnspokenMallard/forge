@@ -38,6 +38,7 @@ import time
 from typing import Any, Mapping
 
 from . import store
+from ._mimir import records as mr
 from .host import host
 from .store import log
 
@@ -88,29 +89,11 @@ def _task_name(event: Mapping[str, Any]) -> str:
     path = str(payload.get("path") or "")
     return path.replace("\\", "/").rsplit("/", 1)[-1]
 
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS classifications (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    event_id   INTEGER,
-    kind       TEXT NOT NULL,
-    decision   TEXT NOT NULL,
-    reason     TEXT NOT NULL,
-    eligible   INTEGER NOT NULL DEFAULT 0,
-    ts         REAL NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_classifications_ts ON classifications(ts);
-"""
-
-
-def ensure_schema() -> None:
-    """Create the dry-run log table. Idempotent, additive, safe to call often.
-
-    Deliberately here rather than in `core.SCHEMA`: until this phase is wired,
-    a draft module should not be able to change the shape of the live database
-    just by being imported somewhere.
-    """
-    with store.connect() as conn:
-        conn.executescript(_SCHEMA)
+# The dry-run log: one Mimir telemetry row per classified event, in the stream below. A row holds
+# event_id, kind, decision, reason, eligible (0/1), ts and wanted -- what the policy WANTED, so the gate
+# need not re-derive it from `reason`. Mimir keeps telemetry 90 days.
+STREAM = "brokkr.classification"
+EVENTS_QUEUE = "jarvis.events"
 
 
 def classify(event: Mapping[str, Any]) -> tuple[Decision, str]:
@@ -180,8 +163,8 @@ def escalation_enabled(cfg: Mapping[str, Any] | None = None) -> bool:
 
 
 # The reason prefix a downgraded escalate is recorded with. The dry-run log's
-# `decision` column holds what the daemon DID; this prefix is how the gate reads
-# what the policy WANTED (`_wanted()`).
+# `decision` field holds what the daemon DID; this prefix is how the policy's
+# wish is read back from it (`_wanted()`, stored as `wanted`).
 WOULD_HAVE = "escalation disabled; would have escalated: "
 
 
@@ -207,28 +190,24 @@ def _wanted(decision: str, reason: str | None) -> str:
 
 
 def record(event: Mapping[str, Any], decision: Decision, reason: str) -> None:
-    """Append one row to the dry-run log. Best effort -- never fails an event.
+    """Append one row to the dry-run log (Mimir telemetry). Best effort -- never fails an event.
 
     A classification that raises would turn a diagnostic into an outage, and
     this module's entire purpose during step 1 is to be observable without
     being load-bearing.
     """
     try:
-        ensure_schema()
         kind = str(event.get("kind") or "")
-        with store.connect() as conn:
-            conn.execute(
-                "INSERT INTO classifications(event_id, kind, decision, reason, eligible, ts) "
-                "VALUES(?, ?, ?, ?, ?, ?)",
-                (
-                    event.get("id"),
-                    kind,
-                    decision,
-                    reason,
-                    1 if kind in ESCALATION_ELIGIBLE_KINDS else 0,
-                    time.time(),
-                ),
-            )
+        now = time.time()
+        mr.append(store.SOURCE, STREAM, {
+            "event_id": event.get("id"),
+            "kind": kind,
+            "decision": decision,
+            "reason": reason,
+            "eligible": 1 if kind in ESCALATION_ELIGIBLE_KINDS else 0,
+            "ts": now,
+            "wanted": _wanted(decision, reason),
+        }, at=now)
     except Exception as exc:  # noqa: BLE001 - diagnostics must not break the queue
         log.warning("policy: failed to record classification: %s", exc)
 
@@ -262,25 +241,11 @@ MAX_ESCALATION_RATE = 0.50
 # one to fit the answer is the failure PHASE4-DESIGN.md §2 exists to name.
 #
 # Horizon for calling it blocked rather than slow: reaching the floor should be
-# plausible inside one retention window, since `[retention]
-# classification_days = 30` deletes the sample after that. A projection past 30
-# days is a projection past the data's own lifetime.
+# plausible inside one window, since the sample was kept 30 days (`[retention]
+# classification_days`) until 2026-10-24, when it moved to Mimir (telemetry, 90
+# days). The horizon stays 30: a projection past it is still a sign of a gate that
+# will not open in any useful time.
 SUPPLY_HORIZON_DAYS = 30
-
-
-def prune(retain_days: int = 30) -> int:
-    """Drop classification rows older than `retain_days`. Same shape as
-    `core.prune_events` / `watchers.prune`.
-
-    `retain_days` must stay >= MIN_DAYS -- see the `[retention]` comment in
-    config.toml -- or this would delete the sample the dry-run gate is
-    measuring before the gate ever gets to read it.
-    """
-    ensure_schema()
-    cutoff = time.time() - retain_days * 86400
-    with store.connect() as conn:
-        cur = conn.execute("DELETE FROM classifications WHERE ts < ?", (cutoff,))
-        return cur.rowcount
 
 
 def supply(days: int = MIN_DAYS) -> tuple[bool, str]:
@@ -292,18 +257,14 @@ def supply(days: int = MIN_DAYS) -> tuple[bool, str]:
     on a workload nobody controls needs to report that out loud -- see the
     SUPPLY_HORIZON_DAYS comment for what went wrong without it.
     """
-    ensure_schema()
     cutoff = time.time() - days * 86400
-    with store.connect() as conn:
-        rows = conn.execute(
-            "SELECT eligible, ts FROM classifications WHERE ts >= ?", (cutoff,)
-        ).fetchall()
+    n_rows = mr.agg("count", stream=STREAM, since=cutoff)
 
-    if not rows:
+    if not n_rows:
         return False, "no classifications yet -- too early to judge supply"
 
-    span_days = max((time.time() - min(r[1] for r in rows)) / 86400, 1e-9)
-    n_eligible = sum(1 for r in rows if r[0])
+    span_days = max((time.time() - mr.agg("min", stream=STREAM, field="ts", since=cutoff)) / 86400, 1e-9)
+    n_eligible = mr.agg("count", stream=STREAM, since=cutoff, where="eligible:1")
     if n_eligible >= MIN_ELIGIBLE:
         return False, f"floor already met ({n_eligible} eligible)"
 
@@ -332,7 +293,7 @@ def supply(days: int = MIN_DAYS) -> tuple[bool, str]:
         return True, (
             f"{n_eligible} eligible in {span_days:.1f}d = {per_day:.2f}/day; "
             f"{missing} more needed = ~{eta_days:.0f}d, past the {SUPPLY_HORIZON_DAYS}d "
-            "retention window that deletes the sample"
+            "window the sample is judged over"
         )
     return False, f"{per_day:.2f} eligible/day, ~{eta_days:.0f}d to the floor"
 
@@ -366,16 +327,15 @@ def replay_sample() -> dict[str, Any]:
     sample shrinks over time and will eventually stop clearing the floor on its
     own. That is a real limit, reported rather than hidden -- see `gate()`.
     """
-    ensure_schema()
-    # The events live in Jarvis's database and the classifications in Brokkr's, so the
-    # anti-join is done here instead of in SQL; the rows and the exclusion are the same.
-    with store.connect() as conn:
-        classified = {r[0] for r in conn.execute(
-            "SELECT event_id FROM classifications WHERE event_id IS NOT NULL")}
-    with host.connect() as conn:
-        rows = [r for r in conn.execute(
-            "SELECT e.id, e.kind, e.state, e.result, e.payload, e.created_at FROM events e"
-        ) if r[0] not in classified]
+    # The events are in Jarvis's queue and the classifications in Brokkr's stream, so the
+    # anti-join is done here. Only the kinds that can matter are read: the eligible kind, and
+    # the scheduled kinds that must never escalate. Events are kept 14 days.
+    rows = []
+    for kind in sorted(ESCALATION_ELIGIBLE_KINDS | SCHEDULED_KINDS):
+        classified = mr.agg("count", stream=STREAM, by="event_id", where="kind:" + json.dumps(kind))
+        for e in mr.queue_all(store.SOURCE, EVENTS_QUEUE, kind=kind):
+            if str(e["id"]) not in classified:
+                rows.append((e["id"], kind, e.get("state"), e.get("result"), e.get("payload"), e["created_at"]))
 
     eligible = escalated = scheduled_escalations = 0
     first_ts = last_ts = None
@@ -409,35 +369,29 @@ def gate(days: int = MIN_DAYS) -> tuple[bool, list[str]]:
     read live rows *plus* the labelled replay (see `replay_sample()`); the
     duration floor reads live rows only.
     """
-    ensure_schema()
     cutoff = time.time() - days * 86400
-    with store.connect() as conn:
-        rows = conn.execute(
-            "SELECT kind, decision, eligible, ts, reason FROM classifications WHERE ts >= ?",
-            (cutoff,),
-        ).fetchall()
-        # The duration floor asks how long the classifier has run live, so it is
-        # measured from the first row on file. Until 2026-09-13 it was measured
-        # inside the window, whose length equals the floor -- a span that can
-        # never reach it, so the check printed "10.0d of 10d" and FAILed forever.
-        first_ts = conn.execute("SELECT MIN(ts) FROM classifications").fetchone()[0]
-
-    if not rows:
+    if not mr.agg("count", stream=STREAM, since=cutoff):
         return False, ["no classifications recorded yet"]
+    # The duration floor asks how long the classifier has run live, so it is
+    # measured from the first row on file. Until 2026-09-13 it was measured
+    # inside the window, whose length equals the floor -- a span that can
+    # never reach it, so the check printed "10.0d of 10d" and FAILed forever.
+    first_ts = mr.agg("min", stream=STREAM, field="ts")
 
     replay = replay_sample()
 
     span_days = (time.time() - first_ts) / 86400
-    eligible = [r for r in rows if r[2]]
+    eligible = [r["data"] for r in mr.query(stream=STREAM, since=cutoff, where="eligible:1", limit=5000)]
     # What the policy WANTED, not what ran. While escalation is off, decide()
     # stores an escalate as `local` with a WOULD_HAVE reason, and until
     # 2026-09-13 this counted the stored decision -- so every live escalation
     # read as local and the rate check measured the switch, the exact thing
     # decide() exists to prevent. The three NEEDS REVIEW rows of 2026-08-31
     # were counted that way.
-    escalated = [r for r in eligible if _wanted(r[1], r[4]) == ESCALATE]
+    escalated = [r for r in eligible if (r.get("wanted") or _wanted(r["decision"], r["reason"])) == ESCALATE]
     scheduled_escalations = [
-        r for r in rows if r[0] in SCHEDULED_KINDS and _wanted(r[1], r[4]) == ESCALATE
+        r["data"] for r in mr.query(stream=STREAM, since=cutoff, where="wanted:" + ESCALATE, limit=5000)
+        if r["data"]["kind"] in SCHEDULED_KINDS
     ]
 
     n_eligible = len(eligible) + replay["eligible"]
