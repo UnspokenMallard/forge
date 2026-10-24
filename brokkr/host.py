@@ -15,15 +15,13 @@ host binds the callables once at startup (`daemon/brokkr_host.py`), and a test b
     ORIGINATION                                             the brain purpose constant
     scope_of(path), provider_of(scope), env_for(scope), env_for_path(path), SCOPES
     load_config() -> dict                                   Jarvis's config.toml ([actions], [brain], ...)
-    connect()                                               Jarvis's jarvis.db (events, actions, brain_calls)
 
-Unbound names raise HostError, never return a default that looks like an answer. Two have a
-read-only stdlib fallback so the CLI works without a daemon: `load_config` and `connect`.
+Unbound names raise HostError, never return a default that looks like an answer. `load_config`
+has a read-only stdlib fallback so the CLI works without a daemon. Jarvis's events, actions and
+brain calls are read from Mimir (`jarvis.events`, `jarvis.actions`, `jarvis.brain_calls`).
 """
 from __future__ import annotations
 
-import contextlib
-import sqlite3
 import tomllib
 
 from . import store
@@ -41,19 +39,9 @@ def _load_config() -> dict:
         return {}
 
 
-@contextlib.contextmanager
-def _connect():
-    conn = sqlite3.connect(store.JARVIS / "jarvis.db", timeout=30)
-    try:
-        with conn:
-            yield conn
-    finally:
-        conn.close()
-
-
 class _Host:
     def __init__(self) -> None:
-        self._bound: dict[str, object] = {"load_config": _load_config, "connect": _connect}
+        self._bound: dict[str, object] = {"load_config": _load_config}
 
     def bind(self, **names: object) -> None:
         self._bound.update(names)

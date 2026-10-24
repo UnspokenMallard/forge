@@ -48,7 +48,7 @@ this module comes to acting is printing a path.
 
 ### The file is a rendering, not the record
 
-`REVIEW-QUEUE.md` is regenerated from the table, the way `ALERTS-NOW.md` is
+`REVIEW-QUEUE.md` is regenerated from the items in Mimir, the way `ALERTS-NOW.md` is
 rendered from `alerts`. Line shapes are preserved exactly, because
 `run-morning-digest.ps1` greps `^\\s*-` out of it under powershell.exe 5.1 --
 and for the same reason every byte written here stays ASCII.
@@ -56,12 +56,13 @@ and for the same reason every byte written here stays ASCII.
 
 from __future__ import annotations
 
+import json
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
 from . import store
+from ._mimir import records as mr
 from .host import host
 from .store import log
 
@@ -78,48 +79,32 @@ UNKNOWN = "unknown"
 # append-only file they did.
 AGING_S = 7 * 86400
 
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS review_items (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    item_key      TEXT NOT NULL,
-    source        TEXT NOT NULL,
-    task_id       TEXT,
-    repo          TEXT,
-    branch        TEXT,
-    worktree      TEXT,
-    tip_sha       TEXT,
-    summary       TEXT NOT NULL,
-    waiting_since REAL NOT NULL,
-    last_seen_at  REAL NOT NULL,
-    cleared_at    REAL,
-    outcome       TEXT,
-    evidence      TEXT,
-    -- Optional, and the only field here a human can supply. Everything else is
-    -- observed. See `ledger()` for why it is not required and what is withheld
-    -- when it is absent.
-    review_min    REAL
-);
--- One OPEN item per key. Cleared rows are unconstrained, so a branch reviewed,
--- deleted and re-created keeps both histories.
-CREATE UNIQUE INDEX IF NOT EXISTS ux_review_open
-    ON review_items(item_key) WHERE cleared_at IS NULL;
-CREATE INDEX IF NOT EXISTS ix_review_waiting ON review_items(waiting_since);
-"""
+# One Mimir record per item (kind `brokkr.review_item`, key = its id). The data holds the columns
+# id, item_key, source, task_id, repo, branch, worktree, tip_sha, summary, waiting_since,
+# last_seen_at, cleared_at, outcome, evidence, review_min and brain_verdict. `review_min` is
+# optional, and the only field a human can supply: everything else is observed. While an item
+# is open it also carries `open: true` and `open_key: <item_key>`, which `clear()` removes.
+# So an open key is found by `where=open_key:<key>`, and a cleared item keeps its history: a
+# branch reviewed, deleted and re-created has two records.
+KIND = "brokkr.review_item"
+_OPEN_COLS = ("id", "item_key", "source", "task_id", "repo", "branch", "worktree",
+              "tip_sha", "summary", "waiting_since", "last_seen_at", "brain_verdict")
 
 
-def ensure_schema() -> None:
-    with store.connect() as conn:
-        conn.executescript(_SCHEMA)
-        # CREATE TABLE IF NOT EXISTS does nothing to a table that already
-        # exists, so a column added after the first deploy needs this. Additive
-        # only, same rule as Jarvis's core._migrate.
-        have = {row[1] for row in conn.execute("PRAGMA table_info(review_items)")}
-        if "review_min" not in have:
-            conn.execute("ALTER TABLE review_items ADD COLUMN review_min REAL")
-        # 2026-09-13: the brain's read-only verdict on the branch, when its
-        # verification came back NEEDS REVIEW and was escalated.
-        if "brain_verdict" not in have:
-            conn.execute("ALTER TABLE review_items ADD COLUMN brain_verdict TEXT")
+def _items(**query) -> list[dict]:
+    """The data of the matching records, ids as ints. Raises MimirDown when Mimir does not answer."""
+    out = []
+    query.setdefault("limit", 5000)
+    for row in mr.query(kind=KIND, source=store.SOURCE, **query):
+        item = row["data"]
+        item["id"] = int(item.get("id") or row["key"])
+        out.append(item)
+    return out
+
+
+def cleared_since(cutoff: float) -> list[dict]:
+    """Items whose fate was decided at or after `cutoff` (epoch seconds)."""
+    return [i for i in _items(since=cutoff) if (i.get("cleared_at") or 0) >= cutoff]
 
 
 def _cfg(cfg: Mapping[str, Any] | None = None) -> dict:
@@ -146,44 +131,36 @@ def add(
     having a table here.
     """
     try:
-        ensure_schema()
         now = time.time()
         key = f"{source}:{repo}:{branch}" if branch else f"{source}:{task_id or summary[:60]}"
-        with store.connect() as conn:
-            row = conn.execute(
-                "SELECT id FROM review_items WHERE item_key = ? AND cleared_at IS NULL", (key,)
-            ).fetchone()
-            if row:
-                conn.execute(
-                    "UPDATE review_items SET summary = ?, last_seen_at = ?, "
-                    "tip_sha = COALESCE(NULLIF(?, ''), tip_sha) WHERE id = ?",
-                    (summary[:500], now, tip_sha, row[0]),
-                )
-                return int(row[0])
-            cur = conn.execute(
-                "INSERT INTO review_items(item_key, source, task_id, repo, branch, worktree, "
-                "tip_sha, summary, waiting_since, last_seen_at) "
-                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (key, source, task_id, repo, branch, worktree, tip_sha,
-                 summary[:500], now, now),
-            )
-            return int(cur.lastrowid) if cur.lastrowid is not None else None
+        found = _items(where="open_key:" + json.dumps(key), limit=1)
+        if found:
+            data = {"summary": summary[:500], "last_seen_at": now}
+            if tip_sha:
+                data["tip_sha"] = tip_sha
+            mr.patch(store.SOURCE, KIND, str(found[0]["id"]), data, at=now)
+            return found[0]["id"]
+        # shortcut: a new id is max+1, claimed with put-if-absent. Two writers racing for one id retry
+        # (5 tries). Two racing for one key could each open it; Brokkr runs one reconcile at a time.
+        for _ in range(5):
+            item_id = int(mr.agg("max", kind=KIND, field="id", source=store.SOURCE) or 0) + 1
+            data = {"id": item_id, "item_key": key, "source": source, "task_id": task_id, "repo": repo,
+                    "branch": branch, "worktree": worktree, "tip_sha": tip_sha, "summary": summary[:500],
+                    "waiting_since": now, "last_seen_at": now, "open": True, "open_key": key}
+            if mr.put(store.SOURCE, KIND, str(item_id), data, at=now, if_absent=True, wait=True):
+                return item_id
+        return None
     except Exception as exc:  # noqa: BLE001 - the work is already done; never fail on bookkeeping
+        # Mimir down: the item is not recorded, and its worktree shows as an orphan until it is re-added.
         log.warning("review: could not record %s/%s: %s", source, task_id or branch, exc)
         return None
 
 
 def waiting() -> list[dict]:
-    ensure_schema()
-    cols = ("id", "item_key", "source", "task_id", "repo", "branch", "worktree",
-            "tip_sha", "summary", "waiting_since", "last_seen_at", "brain_verdict")
-    with store.connect() as conn:
-        rows = conn.execute(
-            "SELECT id, item_key, source, task_id, repo, branch, worktree, tip_sha, "
-            "summary, waiting_since, last_seen_at, brain_verdict FROM review_items "
-            "WHERE cleared_at IS NULL ORDER BY waiting_since"
-        ).fetchall()
-    return [dict(zip(cols, r)) for r in rows]
+    """The open items, oldest wait first. Raises MimirDown when Mimir does not answer."""
+    items = _items(where="open:true")
+    items.sort(key=lambda i: i["waiting_since"])
+    return [{c: i.get(c) for c in _OPEN_COLS} for i in items]
 
 
 def verdict_line(text: str) -> str:
@@ -203,27 +180,22 @@ def attach_verdict(task_id: str, verdict: str) -> bool:
     task that produced no commits has no branch to review, and the verdict
     still reaches status.py and the digest from the escalation row.
     """
-    ensure_schema()
-    with store.connect() as conn:
-        cur = conn.execute(
-            "UPDATE review_items SET brain_verdict = ? WHERE task_id = ? AND cleared_at IS NULL",
-            (verdict[:1000], task_id),
-        )
-        took = cur.rowcount > 0
+    took = False
+    for item in _items(where="task_id:" + json.dumps(task_id)):
+        if item.get("open"):
+            took |= bool(mr.patch(store.SOURCE, KIND, str(item["id"]), {"brain_verdict": verdict[:1000]},
+                                  if_={"open": True}, wait=True))
     if took:
         render()
     return took
 
 
 def clear(item_id: int, outcome: str, evidence: str) -> bool:
-    ensure_schema()
-    with store.connect() as conn:
-        cur = conn.execute(
-            "UPDATE review_items SET cleared_at = ?, outcome = ?, evidence = ? "
-            "WHERE id = ? AND cleared_at IS NULL",
-            (time.time(), outcome, evidence[:300], item_id),
-        )
-        return cur.rowcount > 0
+    now = time.time()
+    return bool(mr.patch(store.SOURCE, KIND, str(item_id),
+                         {"cleared_at": now, "outcome": outcome, "evidence": evidence[:300],
+                          "open": None, "open_key": None},
+                         at=now, if_={"open": True}, wait=True))
 
 
 # --------------------------------------------------------------------------
@@ -333,7 +305,7 @@ def _age(seconds: float) -> str:
 
 
 def render() -> None:
-    """Rewrite `REVIEW-QUEUE.md` from the table.
+    """Rewrite `REVIEW-QUEUE.md` from the open items.
 
     ASCII only, and every line of an item starts with a dash, the shape the
     original writer used: `run-morning-digest.ps1` pulls `^\\s*-` lines straight
@@ -346,7 +318,7 @@ def render() -> None:
         "# Review queue",
         "",
         "Finished autonomous work waiting for review. Nothing here has been",
-        "pushed. Rendered from the `review_items` table by `brokkr/review.py`;",
+        "pushed. Rendered from the `brokkr.review_item` records in Mimir by `brokkr/review.py`;",
         "surfaced by `morning-digest` and `status.py`.",
         "",
         "Items leave this file when git says what happened to the branch -- merged",
@@ -395,23 +367,24 @@ def orphan_worktrees() -> list[str]:
         return []
 
 
+def _outcomes(cleared: list[dict]) -> dict:
+    """{outcome: (count, mean seconds waited)} over cleared items."""
+    out: dict = {}
+    for item in cleared:
+        out.setdefault(item.get("outcome"), []).append(item["cleared_at"] - item["waiting_since"])
+    return {o: (len(w), sum(w) / len(w)) for o, w in out.items()}
+
+
 def report(days: int = 30) -> str:
-    ensure_schema()
     now = time.time()
-    cutoff = now - days * 86400
-    with store.connect() as conn:
-        outcomes = conn.execute(
-            "SELECT outcome, COUNT(*), AVG(cleared_at - waiting_since) FROM review_items "
-            "WHERE cleared_at >= ? GROUP BY outcome",
-            (cutoff,),
-        ).fetchall()
+    outcomes = _outcomes(cleared_since(now - days * 86400))
 
     items = waiting()
     lines = [f"review queue - last {days}d", "", f"  waiting : {len(items)}"]
     if items:
         oldest = min(i["waiting_since"] for i in items)
         lines.append(f"  oldest  : {_age(now - oldest)}")
-    for outcome, count, avg_wait in outcomes:
+    for outcome, (count, avg_wait) in outcomes.items():
         lines.append(f"  {outcome or '?':10}: {count}  (median-ish wait {_age(avg_wait or 0)})")
     if items:
         lines += ["", "  WAITING:"]
@@ -436,11 +409,7 @@ def set_minutes(item_id: int, minutes: float) -> bool:
     named explicitly in `ledger()` and withheld rather than estimated when it
     is missing.
     """
-    ensure_schema()
-    with store.connect() as conn:
-        return conn.execute(
-            "UPDATE review_items SET review_min = ? WHERE id = ?", (float(minutes), item_id)
-        ).rowcount > 0
+    return bool(mr.patch(store.SOURCE, KIND, str(item_id), {"review_min": float(minutes)}, wait=True))
 
 
 def ledger(days: int = 30) -> str:
@@ -460,7 +429,7 @@ def ledger(days: int = 30) -> str:
       * spend is everything autonomous work cost over the window, divided by
         accepted changes: the implementer's runs (`job_calls`), the brain's
         origination and escalation calls (`brain_calls`) and criteria scoring
-        (`provider_calls`). Until 2026-09-13 it read `provider_calls` alone,
+        (`provider_calls`), all read from Mimir. Until 2026-09-13 it read `provider_calls` alone,
         which had one row, ever -- so the figure left out the implementer, the
         one component that costs real money per task. It is **amortised, not
         attributed**: none of those tables carries a task id, so a per-task
@@ -474,46 +443,44 @@ def ledger(days: int = 30) -> str:
     That last rule is the same one the criteria scorer follows: a check that did
     not run must never render as a check that passed.
     """
-    ensure_schema()
     now = time.time()
     cutoff = now - days * 86400
-    with store.connect() as conn:
-        rows = conn.execute(
-            "SELECT outcome, COUNT(*), AVG(cleared_at - waiting_since), "
-            "SUM(COALESCE(review_min, 0)), COUNT(review_min) FROM review_items "
-            "WHERE cleared_at >= ? GROUP BY outcome",
-            (cutoff,),
-        ).fetchall()
-    # (label, store, table, extra filter). Each source is read on its own so a
-    # table that does not exist yet costs its line, not the whole ledger. The
-    # implementer's runs and the scoring calls are in Fafnir's ledger since
-    # 2026-10-17; brain's calls are in its own table here. Scoring is the
-    # criteria-score surface only: until 2026-10-17 it read all of
-    # provider_calls, which also holds every brain call, so brain spend was
-    # counted twice.
-    from fafnir import store as fafnir_store
+    # outcome -> [outcome, count, mean seconds waited, review minutes, items with minutes]
+    by: dict = {}
+    for item in cleared_since(cutoff):
+        r = by.setdefault(item.get("outcome"), [item.get("outcome"), 0, 0.0, 0.0, 0])
+        r[1] += 1
+        r[2] += item["cleared_at"] - item["waiting_since"]
+        if item.get("review_min") is not None:
+            r[3] += item["review_min"]
+            r[4] += 1
+    for r in by.values():
+        r[2] /= r[1]
+    rows = list(by.values())
+    # (label, Mimir stream, extra filter). Each source is read on its own so a stream that has
+    # nothing yet costs its line, not the whole ledger. The implementer's runs and the scoring calls
+    # are Fafnir's records since 2026-10-17; the brain's calls are Jarvis's. Scoring is the
+    # criteria-score surface only: until 2026-10-17 it read all of provider_calls, which also
+    # holds every brain call, so brain spend was counted twice.
     sources = (
-        ("implementer", fafnir_store.connect, "job_calls", "AND job = 'implementer'"),
-        ("brain", host.connect, "brain_calls", ""),
-        ("scoring", fafnir_store.connect, "provider_calls", "AND surface = 'criteria-score'"),
+        ("implementer", "fafnir.job_call", "job:implementer"),
+        ("brain", "jarvis.brain_calls", None),
+        ("scoring", "fafnir.provider_call", "surface:criteria-score"),
     )
     spent_by: list[tuple[str, float, int, int]] = []
-    for label, connect, table, extra in sources:
+    for label, stream, where in sources:
         try:
-            with connect() as conn:
-                total, priced_n, calls_n = conn.execute(
-                    f"SELECT COALESCE(SUM(cost_usd), 0), COUNT(cost_usd), COUNT(*) "
-                    f"FROM {table} WHERE ts >= ? {extra}",
-                    (cutoff,),
-                ).fetchone()
-        except Exception:  # noqa: BLE001 - the table may not exist yet
+            q = {"stream": stream, "since": cutoff, "where": where}
+            total = mr.agg("sum", field="cost_usd", **q) or 0
+            priced_n = mr.agg("count", field="cost_usd", **q)
+            calls_n = mr.agg("count", **q)
+        except mr.MimirError:
             continue
         spent_by.append((label, float(total), int(priced_n), int(calls_n)))
     spend = sum(s[1] for s in spent_by)
     calls = sum(s[3] for s in spent_by)
     priced = sum(s[2] for s in spent_by)
 
-    by = {r[0]: r for r in rows}
     accepted = by.get(ACCEPTED, (None, 0, 0, 0, 0))[1]
     discarded = by.get(DISCARDED, (None, 0, 0, 0, 0))[1]
     decided = accepted + discarded

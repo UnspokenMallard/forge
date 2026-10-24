@@ -1,22 +1,21 @@
-"""Brokkr's store: state/forge.db (WAL), its state files, and the paths of the work it is handed.
+"""Brokkr's store: its state files and the paths of the work it is handed. It keeps no database:
+what it remembers (review items, policy classifications) lives in Mimir under the `brokkr.` prefix.
 
 Paths are module attributes read at call time, so a test points them at a scratch directory
-(`store.ROOT`, `store.STATE`, `store.DB_PATH`) the way Jarvis's selftest does with `core.ROOT`;
+(`store.ROOT`, `store.STATE`) the way Jarvis's selftest does with `core.ROOT`;
 `BROKKR_HOME` moves Brokkr's own data and `JARVIS_HOME` the intake and checkouts it works on.
 Stdlib only: imported by Jarvis's venv and by Brokkr's own.
 """
 from __future__ import annotations
 
-import contextlib
 import logging
 import os
-import sqlite3
 import tomllib
 from pathlib import Path
 
 ROOT = Path(os.environ.get("BROKKR_HOME", Path.home() / ".forge"))
 STATE = ROOT / "state"
-DB_PATH = STATE / "forge.db"
+SOURCE = "brokkr"  # the prefix of every Mimir kind, stream and queue Brokkr writes
 CONFIG = ROOT / "config.toml"
 
 # Where the work comes from and lands. These stay in Jarvis (Anze, 2026-10-17): `queue` is his
@@ -30,20 +29,6 @@ REPORT = Path(os.environ.get("ODIN_HOME", Path.home() / ".analyst")) / "state" /
 
 # A child of Jarvis's "jarvis" logger, so Brokkr's lines land in the same log with the same handlers.
 log = logging.getLogger("jarvis.forge")
-
-
-@contextlib.contextmanager
-def connect():
-    """`with connect() as conn:` commits or rolls back, and always closes (one handle per call)."""
-    Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH, timeout=30)
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA synchronous=NORMAL")
-    try:
-        with conn:
-            yield conn
-    finally:
-        conn.close()
 
 
 def load_config() -> dict:

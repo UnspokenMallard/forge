@@ -21,6 +21,7 @@ import subprocess
 import sys
 
 from . import earned, g15, policy, replay, review
+from ._mimir import records as mr
 from .host import host
 
 
@@ -85,6 +86,15 @@ def _jarvis_job(name: str) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Exit 3 when Mimir does not answer: Brokkr's items and classifications live there."""
+    try:
+        return _main(argv)
+    except mr.MimirDown as exc:
+        print(f"forge: Mimir unreachable ({exc})")
+        return 3
+
+
+def _main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     host.bind(run_process=_run_process)
     cmd, rest = (argv[0], argv[1:]) if argv else ("review", [])

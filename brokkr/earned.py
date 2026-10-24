@@ -2,7 +2,7 @@
 
 The design Anze asked for on 2026-09-05, built 2026-09-13: repeated ACCEPTED
 reviews of autonomous work in one repo propose giving that repo more room;
-repeated DISCARDS propose taking room away. The input is `review_items`, whose
+repeated DISCARDS propose taking room away. The input is the review items in Mimir, whose
 outcome git decides (merged into the base branch is accepted, deleted unmerged
 is discarded) -- so every approval counted here is one the human made by
 merging, not one this module inferred.
@@ -23,7 +23,6 @@ import time
 from typing import Any, Mapping
 
 from . import review
-from . import store
 from .host import host
 
 # Trailing window, long enough that a slow month still accumulates a record.
@@ -43,13 +42,8 @@ def proposals(cfg: Mapping[str, Any] | None = None, now: float | None = None) ->
     """One line per repo whose review record argues for a change, else []."""
     cfg = cfg if cfg is not None else host.load_config()
     now = now if now is not None else time.time()
-    review.ensure_schema()
-    with store.connect() as conn:
-        rows = conn.execute(
-            "SELECT repo, outcome FROM review_items "
-            "WHERE cleared_at IS NOT NULL AND cleared_at >= ? AND outcome IN (?, ?)",
-            (now - WINDOW_S, review.ACCEPTED, review.DISCARDED),
-        ).fetchall()
+    rows = [(i.get("repo"), i.get("outcome")) for i in review.cleared_since(now - WINDOW_S)
+            if i.get("outcome") in (review.ACCEPTED, review.DISCARDED)]
 
     tally: dict[str, list] = {}
     for repo, outcome in rows:
