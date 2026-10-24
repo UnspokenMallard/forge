@@ -63,7 +63,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 
 from . import store
-from .host import host
+from ._mimir import records as mr
 from .store import log
 
 CORPUS_DIR = store.STATE / "corpora"
@@ -200,42 +200,23 @@ def _write(name: str, doc: dict) -> None:
     tmp.replace(path)
 
 
-def capture_query(
-    name: str,
-    sql: str,
-    cols: tuple[str, ...],
-    *,
-    key_col: str,
-    args: tuple = (),
-    source: str = "",
-    note: str = "",
-    connect: Callable | None = None,
-) -> dict | None:
-    """Capture straight from the live database. None if the query could not run.
-
-    The common case, and the one worth making a one-liner: every existing
-    harness starts by reading a table that is being pruned underneath it.
-    """
-    try:
-        with (connect or host.connect)() as conn:
-            rows = conn.execute(sql, args).fetchall()
-    except Exception as exc:  # noqa: BLE001 - a missing table is a real answer
-        log.warning("replay: capture_query for %s failed: %s", name, exc)
-        return None
+def capture_stream(name: str, rows: Iterable[Mapping[str, Any]], cols: tuple[str, ...], *, key_col: str,
+                   source: str = "", note: str = "") -> dict:
+    """Capture rows read from Mimir, keeping only `cols` and giving each the string key of `key_col`."""
     prepared = []
     for row in rows:
-        record = dict(zip(cols, row))
+        record = {c: row.get(c) for c in cols}
         record[KEY] = str(record.get(key_col))
         prepared.append(record)
-    return capture(name, prepared, source=source or sql.strip().split("\n")[0], note=note)
+    return capture(name, prepared, source=source, note=note)
 
 
 # --------------------------------------------------------------------------
 # The standing corpora
 #
-# The four existing harnesses all read tables that are being deleted underneath
+# The four existing harnesses all read data that is being deleted underneath
 # them: `ladder-replay.py` and `burn-replay.py` both walk `events`, which
-# `core.prune_events` empties at 14 days, and `PHASE6-DESIGN.md` 5a already
+# Mimir's queue prunes at 14 days, and `PHASE6-DESIGN.md` 5a already
 # records the dry-run gate's sample resting on 37 replayed events against a
 # floor of 25, with the note that it "clears the floor comfortably today and
 # will not forever".
@@ -243,24 +224,56 @@ def capture_query(
 # Capturing on a schedule is what turns that from a countdown into a growing
 # archive. It does not change any gate's arithmetic today; it means the evidence
 # still exists the day someone needs to re-run one.
+#
+# Since 2026-10-24 the sources are Mimir's: Jarvis's events queue, and the
+# `jarvis.actions` and `fafnir.provider_call` telemetry streams. A record keeps
+# the columns the old tables had, so a corpus captured before the move merges
+# with one captured after it.
 # --------------------------------------------------------------------------
 
+EVENTS_QUEUE = "jarvis.events"
+EVENT_COLS = ("id", "kind", "state", "payload", "result", "created_at", "updated_at", "started_at")
+
+
+def _events() -> Iterable[Mapping[str, Any]]:
+    for e in mr.queue_all(store.SOURCE, EVENTS_QUEUE):
+        # The queue parses the payload; the corpus holds it as the text the events table held.
+        yield {**e, "payload": json.dumps(e["payload"])}
+
+
+def _stream(stream: str) -> Callable[[], Iterable[Mapping[str, Any]]]:
+    """Every row of a telemetry stream, oldest first, as the data the table row had. A row Mimir
+    holds without the table's own `id` (written after the move) gets `m<telemetry id>`, so keys stay unique."""
+    def rows() -> Iterable[Mapping[str, Any]]:
+        since = None
+        seen: set = set()
+        while True:
+            page = mr.query(stream=stream, since=since, limit=5000)
+            fresh = [r for r in page if r["id"] not in seen]
+            for r in fresh:
+                seen.add(r["id"])
+                yield {**r["data"], "id": r["data"].get("id", f"m{r['id']}")}
+            if len(page) < 5000 or not fresh:
+                return
+            since = page[-1]["at"]
+    return rows
+
+
+# (corpus, rows, columns, key column, note). The events corpus keeps `started_at` since 2026-09-13:
+# burn-replay.py times a stuck flag from it, the way the live detector does, and rows captured
+# without it can only be replayed on the queue-wait-inclusive upper bound.
 STANDARD = (
     (
         "events",
-        # started_at joined 2026-09-13: burn-replay.py times a stuck flag from it,
-        # the way the live detector does, and rows captured without it can only
-        # be replayed on the queue-wait-inclusive upper bound.
-        "SELECT id, kind, state, payload, result, created_at, updated_at, started_at FROM events",
-        ("id", "kind", "state", "payload", "result", "created_at", "updated_at", "started_at"),
+        _events,
+        EVENT_COLS,
         "id",
-        "every event, the table core.prune_events deletes at 14 days. Read by "
+        "every event, the queue Mimir prunes at 14 days. Read by "
         "ladder-replay.py and burn-replay.py.",
     ),
     (
         "actions",
-        "SELECT id, ts, action, target, tier, authorized_by, decision, shadow, "
-        "outcome, evidence FROM actions",
+        _stream("jarvis.actions"),
         ("id", "ts", "action", "target", "tier", "authorized_by", "decision",
          "shadow", "outcome", "evidence"),
         "id",
@@ -269,7 +282,7 @@ STANDARD = (
     ),
     (
         "provider-calls",
-        "SELECT id, ts, surface, model, ok, duration_s, cost_usd FROM provider_calls",
+        _stream("fafnir.provider_call"),
         ("id", "ts", "surface", "model", "ok", "duration_s", "cost_usd"),
         "id",
         "spend, per call. The input to burn-replay.py and to the review "
@@ -282,20 +295,16 @@ STANDARD = (
 def capture_standard() -> list[str]:
     """Capture every standing corpus. Reports each one, including its failures.
 
-    A table that does not exist yet is a real answer and not an error -- the
-    column lists here are wider than some of these tables were when they were
-    created, and a schema that has moved on should be visible as a line in a job
-    result rather than as a crash that stops the other captures.
+    A source that cannot be read is a real answer and not an error: it is a line
+    in a job result rather than a crash that stops the other captures. Mimir
+    being down is the usual cause.
     """
     out = []
-    for name, sql, cols, key_col, note in STANDARD:
-        # provider_calls lives in Fafnir's store since 2026-10-17
-        from fafnir import store as fafnir_store
-        in_budget = name == "provider-calls"
-        result = capture_query(name, sql, cols, key_col=key_col, note=note,
-                               source="budget.db" if in_budget else "jarvis.db",
-                               connect=fafnir_store.connect if in_budget else host.connect)
-        if result is None:
+    for name, rows, cols, key_col, note in STANDARD:
+        try:
+            result = capture_stream(name, rows(), cols, key_col=key_col, note=note, source="mimir")
+        except Exception as exc:  # noqa: BLE001 - one corpus must not stop the rest
+            log.warning("replay: capture of %s failed: %s", name, exc)
             out.append(f"{name}: COULD NOT CAPTURE")
             continue
         line = (
