@@ -11,7 +11,7 @@ Brokkr instead of doing it.
 |---|---|
 | Home | `~/.forge`, own git repo, code and `state/` together, own venv |
 | Schedule | Jarvis triggers (`queue-dispatch`, `originate-task`, `review-reconcile` stay Jarvis jobs that call Brokkr) |
-| Process | CLI and library, no service; state in `state/forge.db` |
+| Process | CLI and library, no service; no database of its own (review items and classifications live in Mimir, since 2026-10-24) |
 | Sessions | Built last, in its own session, from this design |
 
 ## Boundary
@@ -68,8 +68,9 @@ not unattended work. Merging the two worktree mechanisms is a later, separate de
   `originate.py` (`originate`); `cli.py` behind `bin/forge`; `tests/test_brokkr.py`.
 - The host: `run_process`, `notify`, `record_limit`, `permit`, `record_outcome`, `brain_allowed`,
   `brain_work`, `brain_cli_path`, `ORIGINATION`, `scope_of`, `provider_of`, `env_for`, `env_for_path`,
-  `SCOPES`, `load_config` (Jarvis's config.toml), `connect` (jarvis.db: events, actions, brain_calls). An
-  unbound name raises `HostError`; only `load_config` and `connect` have a read-only fallback, for the CLI.
+  `SCOPES`, `load_config` (Jarvis's config.toml). (`connect` to jarvis.db is gone: events, actions and
+  brain_calls are read from Mimir.) An unbound name raises `HostError`; only `load_config` has a read-only
+  fallback, for the CLI.
   Jarvis's binding forwards at call time, so the selftest's replacements of `core.notify` etc. reach Brokkr.
 - Jarvis keeps thin handlers (`handlers/queue.py`, `delegation.py`, `originate.py`, `review_check.py`,
   `corpus_capture.py` which runs `forge corpus capture` in a child), and imports `brokkr.review`,
@@ -86,6 +87,27 @@ not unattended work. Merging the two worktree mechanisms is a later, separate de
 - Behaviour checks after the restart: G15 still PASS (3 agreed, 0 rejected, 54 never), the policy gate still
   SUPPLY-BLOCKED, burn-replay 0 unexplained false positives, `queue-dispatch` "no pending entries",
   new classifications landing in `forge.db`.
+
+## Storage in Mimir (2026-10-24)
+
+Mimir is the only store (RECORDS-DESIGN.md in `~/.mind`). Brokkr opens no SQLite file and keeps files only for
+the G15 record, the corpora and `REVIEW-QUEUE.md`, which are not data other parts need.
+
+- Review items: records `brokkr.review_item`, key = item id. An open item carries `open: true` and
+  `open_key: <item_key>`, so "one open item per task" is a lookup, not a scan; clearing sets `cleared_at`,
+  `outcome`, `evidence` and removes both fields. Writes that must not be lost or doubled (`add`, `clear`,
+  `attach_verdict`) go straight to Mimir and raise `MimirDown`; `add` logs and returns None instead.
+- Classifications: telemetry stream `brokkr.classification` with `event_id`, `kind`, `decision`, `reason`,
+  `eligible`, `ts` and `wanted` (the escalate/not verdict, stored so the gate need not re-derive it).
+  Retention is Mimir's 90 days for telemetry (was 30 in `forge.db`); there is no prune job.
+- Jarvis's events are read from the `jarvis.events` queue; the replay's anti-join (`event_id`) is done in
+  Python over `mr.queue_all` and a grouped `mr.agg`. Reads raise `MimirDown`; the CLI prints "Mimir
+  unreachable" and exits 3, and `capture_standard` reports each corpus it could not read.
+- The ledger's spend comes from `mr.agg` over telemetry streams `fafnir.job_call`, `jarvis.brain_calls`
+  and `fafnir.provider_call`.
+- `tests/test_brokkr.py` runs against a scratch Mimir store (`MEMORY_DB`), in-process.
+- Cutover: `~/.mind/tools/import-records.py brokkr` copies the old `forge.db` rows (classifications with
+  `wanted`, items with `open`/`open_key`), checks counts, and renames it `forge.db.archived-2026-10-24`.
 
 Differs from the design above, on inspection:
 

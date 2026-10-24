@@ -5,6 +5,10 @@ pipeline, review ledger, policy and corpora into Forge"). The first-night check 
 done (old tables dropped, 655 old classification rows exported to `state/classifications-pre-cutover.json`,
 old files deleted). Nothing is left; the table below is the record.
 
+UPDATE 2026-10-24: Forge (Brokkr) no longer has `state/forge.db`; its rows live in Mimir (`DESIGN.md`, "Storage in
+Mimir"). Read `state/forge.db` and `classifications` below as `brokkr.review_item` records and
+`brokkr.classification` telemetry. After the import the old file is `state/forge.db.archived-2026-10-24`.
+
 ## When to fire this
 
 Earliest-useful dates, not deadlines; being late costs nothing.
@@ -59,7 +63,7 @@ covers these rows too. The rule stays: this component measures or knows; Jarvis 
 
 ## C: something is broken
 
-> Forge or the Jarvis daemon broke after the cutover. First, do not delete `state/forge.db`, `jarvis.db`, a
+> Forge or the Jarvis daemon broke after the cutover. First, do not delete `state/forge.db*` (or its archive), `jarvis.db*`, a
 > backup, a corpus or a worktree: they are the evidence. Copy the db with `sqlite3 .backup`, run
 > `~/.jarvis/.venv/bin/python ~/.jarvis/status.py` and the selftest, read `~/.jarvis/logs/jarvis.log`, and
 > report before fixing. `git -C ~/.jarvis log` and `git -C ~/.forge log` show the cutover commits.
