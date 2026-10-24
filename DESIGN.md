@@ -10,7 +10,7 @@ Brokkr instead of doing it.
 | Question | Decision |
 |---|---|
 | Home | `~/.forge`, own git repo, code and `state/` together, own venv |
-| Schedule | Jarvis triggers (`queue-dispatch`, `originate-task`, `review-reconcile` stay Jarvis jobs that call Forge) |
+| Schedule | Jarvis triggers (`queue-dispatch`, `originate-task`, `review-reconcile` stay Jarvis jobs that call Brokkr) |
 | Process | CLI and library, no service; state in `state/forge.db` |
 | Sessions | Built last, in its own session, from this design |
 
@@ -82,7 +82,7 @@ not unattended work. Merging the two worktree mechanisms is a later, separate de
 - Cleanup done 2026-10-18 (Anze confirmed): `review_items` and `classifications` dropped from `jarvis.db`; the 655
   classification rows older than Brokkr's 30-day retention exported to `state/classifications-pre-cutover.json`
   first; `~/.jarvis/corpora`, `REVIEW-QUEUE.md`, `g15-corpus.json`, `g15-replay.json` deleted. Since then other
-  sessions changed `store.REPORT` (Analyst's report) and the host's `record_limit` to `alert_limit` (Gateway).
+  sessions changed `store.REPORT` (Odin's report) and the host's `record_limit` to `alert_limit` (Bifrost).
 - Behaviour checks after the restart: G15 still PASS (3 agreed, 0 rejected, 54 never), the policy gate still
   SUPPLY-BLOCKED, burn-replay 0 unexplained false positives, `queue-dispatch` "no pending entries",
   new classifications landing in `forge.db`.
