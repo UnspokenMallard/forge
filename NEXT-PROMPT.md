@@ -32,7 +32,7 @@ covers these rows too. The rule stays: this component measures or knows; Jarvis 
   queue-dispatch polls an empty queue every 5 minutes. Decided 2026-10-21 (D9): retire originate-task;
   keep queue-dispatch for hand-written entries, polled less often (hourly).
 - **A38 (Phase 3)** issue-triage is designated to move here from Analyst.
-- **A39 (Phase 4)** `forge/delegation.py:172` docstring is out of date.
+- **A39 (Phase 4)** `brokkr/delegation.py:172` docstring is out of date.
 
 | When (earliest useful, not a deadline) | Step | Waits on |
 |---|---|---|
@@ -43,7 +43,7 @@ covers these rows too. The rule stays: this component measures or knows; Jarvis 
 
 > Read `~/.forge/DESIGN.md` ("As built") and this file. Do the first row whose date has passed and report.
 > Rules: Forge never alerts, pings or holds work; Jarvis triggers it and acts. Forge imports nothing from
-> `~/.jarvis`: what it needs from Jarvis goes through `forge/host.py`, bound by `~/.jarvis/daemon/forge_host.py`.
+> `~/.jarvis`: what it needs from Jarvis goes through `brokkr/host.py`, bound by `~/.jarvis/daemon/brokkr_host.py`.
 > An unbound host name raises; never give it a default that looks like an answer. Never widen `[[actions]]`
 > targets, never add a push or open-pull-request action, never delete anything under `~/.jarvis/worktrees`.
 > G15 is recomputed, never stored; do not edit `proposer.PROMPT` and re-run the replay against the same labels.
@@ -55,7 +55,7 @@ covers these rows too. The rule stays: this component measures or knows; Jarvis 
 
 > Run `~/.forge/bin/forge review`, `~/.forge/bin/forge ledger`, `~/.forge/bin/forge g15`,
 > `~/.forge/bin/forge policy`, `~/.forge/bin/forge corpus list`, `~/.forge/.venv/bin/python
-> ~/.forge/tests/test_forge.py` and `~/.jarvis/.venv/bin/python ~/.jarvis/selftest.py`. Change nothing.
+> ~/.forge/tests/test_brokkr.py` and `~/.jarvis/.venv/bin/python ~/.jarvis/selftest.py`. Change nothing.
 
 ## C: something is broken
 

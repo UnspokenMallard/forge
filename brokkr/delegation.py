@@ -34,7 +34,7 @@ import re
 import time
 from pathlib import Path
 
-import gateway
+import bifrost
 
 from .host import host
 from .store import log
@@ -197,10 +197,10 @@ async def _score_criteria(repo: str, task: dict, base: str | None) -> str | None
         f"ACCEPTANCE CRITERIA:\n{numbered}\n\nDIFF:\n{diff}\n"
     )
 
-    # Through Gateway (surface `criteria-score`, which picks the model and writes the provider-ledger
+    # Through Bifrost (surface `criteria-score`, which picks the model and writes the provider-ledger
     # row under that name). Since 2026-10-17 the call is isolated with JSON output, so its cost is
     # known; it reads the diff it was handed and nothing else.
-    res = await gateway.aask("criteria-score", prompt, scope=host.scope_of(repo), timeout_s=180)
+    res = await bifrost.aask("criteria-score", prompt, scope=host.scope_of(repo), timeout_s=180)
     if res is None or not res["ok"]:
         why = "surface is off" if res is None else str(res["reason"])[:80]
         return f"criteria scoring unavailable ({why})"

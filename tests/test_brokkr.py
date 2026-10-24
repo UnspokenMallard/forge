@@ -1,7 +1,7 @@
-"""Forge's own checks, against scratch data and a fake host. Run: ~/.forge/.venv/bin/python tests/test_forge.py
+"""Brokkr's own checks, against scratch data and a fake host. Run: ~/.forge/.venv/bin/python tests/test_brokkr.py
 
 The cutover bar is "no change in behavior", and Jarvis's selftest proves that with the real host.
-This file proves the part Forge owns: its store, its refusal to guess, and its pure rules.
+This file proves the part Brokkr owns: its store, its refusal to guess, and its pure rules.
 """
 from __future__ import annotations
 
@@ -15,13 +15,13 @@ import tempfile
 import time
 from pathlib import Path
 
-TMP = Path(tempfile.mkdtemp(prefix="forge-test-"))
-os.environ["FORGE_HOME"] = str(TMP / "forge")
+TMP = Path(tempfile.mkdtemp(prefix="brokkr-test-"))
+os.environ["BROKKR_HOME"] = str(TMP / "brokkr")
 os.environ["JARVIS_HOME"] = str(TMP / "jarvis")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from forge import earned, g15, policy, proposer, queue, replay, review, store  # noqa: E402
-from forge.host import HostError, host  # noqa: E402
+from brokkr import earned, g15, policy, proposer, queue, replay, review, store  # noqa: E402
+from brokkr.host import HostError, host  # noqa: E402
 
 FAILED = []
 
@@ -34,7 +34,7 @@ def check(name: str, ok: bool, detail=None) -> None:
 
 
 # -- paths follow the environment, so no test touches the real store ---------------------
-check("data goes to FORGE_HOME", store.DB_PATH == TMP / "forge" / "state" / "forge.db", store.DB_PATH)
+check("data goes to BROKKR_HOME", store.DB_PATH == TMP / "brokkr" / "state" / "forge.db", store.DB_PATH)
 check("intake and checkouts follow JARVIS_HOME", store.QUEUE_PATH == TMP / "jarvis" / "queue"
       and store.WORKTREES == TMP / "jarvis" / "worktrees", (store.QUEUE_PATH, store.WORKTREES))
 

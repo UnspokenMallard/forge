@@ -289,12 +289,12 @@ def capture_standard() -> list[str]:
     """
     out = []
     for name, sql, cols, key_col, note in STANDARD:
-        # provider_calls lives in Budget's store since 2026-10-17
-        from budget import store as budget_store
+        # provider_calls lives in Fafnir's store since 2026-10-17
+        from fafnir import store as fafnir_store
         in_budget = name == "provider-calls"
         result = capture_query(name, sql, cols, key_col=key_col, note=note,
                                source="budget.db" if in_budget else "jarvis.db",
-                               connect=budget_store.connect if in_budget else host.connect)
+                               connect=fafnir_store.connect if in_budget else host.connect)
         if result is None:
             out.append(f"{name}: COULD NOT CAPTURE")
             continue

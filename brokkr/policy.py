@@ -367,7 +367,7 @@ def replay_sample() -> dict[str, Any]:
     own. That is a real limit, reported rather than hidden -- see `gate()`.
     """
     ensure_schema()
-    # The events live in Jarvis's database and the classifications in Forge's, so the
+    # The events live in Jarvis's database and the classifications in Brokkr's, so the
     # anti-join is done here instead of in SQL; the rows and the exclusion are the same.
     with store.connect() as conn:
         classified = {r[0] for r in conn.execute(

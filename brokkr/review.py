@@ -346,7 +346,7 @@ def render() -> None:
         "# Review queue",
         "",
         "Finished autonomous work waiting for review. Nothing here has been",
-        "pushed. Rendered from the `review_items` table by `forge/review.py`;",
+        "pushed. Rendered from the `review_items` table by `brokkr/review.py`;",
         "surfaced by `morning-digest` and `status.py`.",
         "",
         "Items leave this file when git says what happened to the branch -- merged",
@@ -486,16 +486,16 @@ def ledger(days: int = 30) -> str:
         ).fetchall()
     # (label, store, table, extra filter). Each source is read on its own so a
     # table that does not exist yet costs its line, not the whole ledger. The
-    # implementer's runs and the scoring calls are in Budget's ledger since
+    # implementer's runs and the scoring calls are in Fafnir's ledger since
     # 2026-10-17; brain's calls are in its own table here. Scoring is the
     # criteria-score surface only: until 2026-10-17 it read all of
     # provider_calls, which also holds every brain call, so brain spend was
     # counted twice.
-    from budget import store as budget_store
+    from fafnir import store as fafnir_store
     sources = (
-        ("implementer", budget_store.connect, "job_calls", "AND job = 'implementer'"),
+        ("implementer", fafnir_store.connect, "job_calls", "AND job = 'implementer'"),
         ("brain", host.connect, "brain_calls", ""),
-        ("scoring", budget_store.connect, "provider_calls", "AND surface = 'criteria-score'"),
+        ("scoring", fafnir_store.connect, "provider_calls", "AND surface = 'criteria-score'"),
     )
     spent_by: list[tuple[str, float, int, int]] = []
     for label, connect, table, extra in sources:

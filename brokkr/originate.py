@@ -32,7 +32,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-import gateway
+import bifrost
 
 from . import findings, proposer, store
 from .host import host
@@ -163,10 +163,10 @@ async def _originate_scope(cfg: dict, report: str, targets: dict[str, str], scop
     if not cands:
         return f"[{scope}] nothing to judge - no new findings for {', '.join(sorted(scoped)) or 'any repo'}"
 
-    # G15 measured the proposer on proposer.MODEL; Gateway's surface must still route it there.
-    routed = gateway.model_for("originate")
+    # G15 measured the proposer on proposer.MODEL; Bifrost's surface must still route it there.
+    routed = bifrost.model_for("originate")
     if routed != proposer.MODEL:
-        return f"[{scope}] proposer not called - Gateway routes 'originate' to {routed}, G15 measured {proposer.MODEL}"
+        return f"[{scope}] proposer not called - Bifrost routes 'originate' to {routed}, G15 measured {proposer.MODEL}"
     proposer.WORKDIR.mkdir(parents=True, exist_ok=True)
     result = await host.brain_work(
         proposer.build_prompt(_scope_report(report, scoped), cands, already),

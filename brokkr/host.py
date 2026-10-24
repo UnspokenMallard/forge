@@ -1,12 +1,12 @@
-"""What Forge asks of the program that runs it (Jarvis), as one small interface.
+"""What Brokkr asks of the program that runs it (Jarvis), as one small interface.
 
-Forge does the work it is handed; Jarvis decides what work is allowed and when, keeps the
-ladder, the brain and the process runner, and tells Anze. Forge never imports any of that: the
-host binds the callables once at startup (`daemon/forge_host.py`), and a test binds fakes.
+Brokkr does the work it is handed; Jarvis decides what work is allowed and when, keeps the
+ladder, the brain and the process runner, and tells Anze. Brokkr never imports any of that: the
+host binds the callables once at startup (`daemon/brokkr_host.py`), and a test binds fakes.
 
     run_process(cmd, timeout_s=, cwd=, input_text=, env=) -> (code, output)    async
-    notify(key, message, severity=, cooldown_s=)            Jarvis's alert path; Forge never pings
-    alert_limit(provider)                                   alert a usage limit Gateway recorded in Budget
+    notify(key, message, severity=, cooldown_s=)            Jarvis's alert path; Brokkr never pings
+    alert_limit(provider)                                   alert a usage limit Bifrost recorded in Fafnir
     permit(action, target, cfg=, evidence=) -> Decision     the autonomy ladder; .allowed .reason .action_id
     record_outcome(action_id, text)
     brain_allowed(cfg, purpose, scope) -> (ok, why)         the brain's caps, breaker, limit and brake
@@ -30,7 +30,7 @@ from . import store
 
 
 class HostError(RuntimeError):
-    """Forge was asked to do something that needs Jarvis, and no host is bound."""
+    """Brokkr was asked to do something that needs Jarvis, and no host is bound."""
 
 
 def _load_config() -> dict:
@@ -68,7 +68,7 @@ class _Host:
             return self._bound[name]
         except KeyError:
             raise HostError(
-                f"forge host has no {name!r}: Jarvis binds it at startup (daemon/forge_host.py)"
+                f"forge host has no {name!r}: Jarvis binds it at startup (daemon/brokkr_host.py)"
             ) from None
 
 

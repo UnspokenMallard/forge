@@ -1,9 +1,9 @@
-"""Forge's store: state/forge.db (WAL), its state files, and the paths of the work it is handed.
+"""Brokkr's store: state/forge.db (WAL), its state files, and the paths of the work it is handed.
 
 Paths are module attributes read at call time, so a test points them at a scratch directory
 (`store.ROOT`, `store.STATE`, `store.DB_PATH`) the way Jarvis's selftest does with `core.ROOT`;
-`FORGE_HOME` moves Forge's own data and `JARVIS_HOME` the intake and checkouts it works on.
-Stdlib only: imported by Jarvis's venv and by Forge's own.
+`BROKKR_HOME` moves Brokkr's own data and `JARVIS_HOME` the intake and checkouts it works on.
+Stdlib only: imported by Jarvis's venv and by Brokkr's own.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import sqlite3
 import tomllib
 from pathlib import Path
 
-ROOT = Path(os.environ.get("FORGE_HOME", Path.home() / ".forge"))
+ROOT = Path(os.environ.get("BROKKR_HOME", Path.home() / ".forge"))
 STATE = ROOT / "state"
 DB_PATH = STATE / "forge.db"
 CONFIG = ROOT / "config.toml"
@@ -25,10 +25,10 @@ JARVIS = Path(os.environ.get("JARVIS_HOME", Path.home() / ".jarvis"))
 QUEUE_PATH = JARVIS / "queue"
 WORKTREES = JARVIS / "worktrees"
 DELEGATION = JARVIS / "delegation"
-# The portfolio advisor's report, written by Analyst since 2026-10-18 (was ~/.jarvis/portfolio-report.md).
-REPORT = Path(os.environ.get("ANALYST_HOME", Path.home() / ".analyst")) / "state" / "reports" / "portfolio" / "latest.md"
+# The portfolio advisor's report, written by Odin since 2026-10-18 (was ~/.jarvis/portfolio-report.md).
+REPORT = Path(os.environ.get("ODIN_HOME", Path.home() / ".analyst")) / "state" / "reports" / "portfolio" / "latest.md"
 
-# A child of Jarvis's "jarvis" logger, so Forge's lines land in the same log with the same handlers.
+# A child of Jarvis's "jarvis" logger, so Brokkr's lines land in the same log with the same handlers.
 log = logging.getLogger("jarvis.forge")
 
 

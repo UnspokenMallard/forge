@@ -34,7 +34,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from budget import brake, ledger, limits
+from fafnir import brake, ledger, limits
 
 from . import implementer, review, store
 from .host import host

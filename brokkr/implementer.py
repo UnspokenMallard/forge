@@ -24,7 +24,7 @@ rather than assumed:
   as its message and no trailer. A worktree holds only committed files plus
   the agent's edits, so `git add -A` in it cannot sweep anyone's work in.
 
-The session runs through Gateway (`gateway.run_agent`, surface `job:implementer`, which picks
+The session runs through Bifrost (`bifrost.run_agent`, surface `job:implementer`, which picks
 the model, since 2026-10-17): spend is metered as an LLM job (`job_calls`, "implementer")
 against the weekly ceiling, and each task is capped with `--max-budget-usd`. The
 outcome is filed into ~/.jarvis/delegation/done/ or failures/, where the
@@ -40,9 +40,9 @@ import uuid
 from pathlib import Path
 from typing import Any, Mapping
 
-import gateway
-from budget import ledger
-from gateway import agent as gw_agent
+import bifrost
+from fafnir import ledger
+from bifrost import agent as gw_agent
 
 from . import store
 from .host import host
@@ -92,7 +92,7 @@ def _rule_path(path: Path) -> str:
     return "/" + posix if posix.startswith("/") and not posix.startswith("//") else posix
 
 
-FLAGS = ["--restricted", "--safe-mode"]  # --strict-mcp-config comes from gateway.agent.command()
+FLAGS = ["--restricted", "--safe-mode"]  # --strict-mcp-config comes from bifrost.agent.command()
 
 
 def allow_rules(worktree: Path) -> list[str]:
@@ -101,7 +101,7 @@ def allow_rules(worktree: Path) -> list[str]:
 
 
 def command(exe: str, model: str, budget_usd: float, worktree: Path, session: str) -> list[str]:
-    """The argument list Gateway runs for one task (shown here for the selftest)."""
+    """The argument list Bifrost runs for one task (shown here for the selftest)."""
     return gw_agent.command(exe, model, session, TOOLS, allow_rules(worktree), budget_usd, flags=FLAGS)
 
 
@@ -131,9 +131,9 @@ End with a two- or three-line summary of what you changed.
 
 async def _agent(task_id: str, worktree: Path, prompt: str, conf: Mapping[str, Any], session: str,
                  scope: str) -> dict:
-    """The one place a model process is spawned: one `gateway.run_agent` attempt. The selftest replaces it."""
+    """The one place a model process is spawned: one `bifrost.run_agent` attempt. The selftest replaces it."""
     return await asyncio.to_thread(
-        gateway.run_agent, JOB, prompt, TOOLS, allow_rules(worktree), float(conf["max_usd_per_task"]),
+        bifrost.run_agent, JOB, prompt, TOOLS, allow_rules(worktree), float(conf["max_usd_per_task"]),
         scope=scope, cwd=worktree, flags=FLAGS, session=session, max_attempts=1,
         timeout_s=int(conf["timeout_s"]), note=task_id,
     )
@@ -191,7 +191,7 @@ async def run(
 
     cost, subtype, denials = float(res["cost_usd"] or 0.0), str(res["subtype"]), list(res["denials"])
     summary = " ".join(str(res["result"] or "").split())[:400]
-    # Gateway recorded the job call and any usage-limit window in Budget; Jarvis raises the alert.
+    # Bifrost recorded the job call and any usage-limit window in Fafnir; Jarvis raises the alert.
     hit = res["limit"]
     if hit is not None:
         host.alert_limit(hit.provider)

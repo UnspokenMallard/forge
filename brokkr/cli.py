@@ -11,8 +11,8 @@
   forge corpus [list | capture | show <name> | export <name>]
 
 `dispatch` and `originate` spend a model and write to the ladder, so they run on Jarvis's host
-binding (`~/.jarvis/daemon/forge_host.py`, import it with Jarvis's interpreter). The rest read and
-write Forge's own store and need no host beyond a git runner, which this module binds.
+binding (`~/.jarvis/daemon/brokkr_host.py`, import it with Jarvis's interpreter). The rest read and
+write Brokkr's own store and need no host beyond a git runner, which this module binds.
 """
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ def _jarvis_job(name: str) -> int:
     from . import store
     sys.path.insert(0, str(store.JARVIS / "daemon"))
     try:
-        import forge_host  # noqa: F401 - binds on import
+        import brokkr_host  # noqa: F401 - binds on import
     except ImportError as exc:
         print(f"forge {name}: needs Jarvis's host binding ({exc}); run it with Jarvis's interpreter")
         return 2
